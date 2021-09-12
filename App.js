@@ -20,7 +20,7 @@ export default function App() {
 
   const startTracking = async () => {
     await Location.startLocationUpdatesAsync('bgLocation', {
-      accuracy: Location.Accuracy.Lowest,
+      accuracy: Location.Accuracy.Balanced,
       timeInterval: 1000,
       distanceInterval: 0,
       foregroundService: {
