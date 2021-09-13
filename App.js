@@ -1,16 +1,18 @@
 import React from 'react';
-import { StyleSheet, Text, View, Button } from 'react-native';
+import { StyleSheet, Text, View, Button, Dimensions } from 'react-native';
 import { useState, useEffect } from 'react';
 import * as Location from 'expo-location'
 import * as TaskManager from 'expo-task-manager'
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import MapView, { Marker, Polyline } from 'react-native-maps'
+
+
 
 const locationStorageName = 'locations'
 
 export default function App() {
   const [errorMsg, setErrorMsg] = useState(null);
-  const [route, setRoute] = useState([])
-
+  const [locationsState, setLocationsState] = useState([])
   useEffect(() => {
     (async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
@@ -20,6 +22,18 @@ export default function App() {
       }
     })()
   }, [])
+
+  useEffect(() => {
+    getLocations().then(locations => {setLocationsState(locations)});
+    const timerId = window.setInterval(() => {
+      getLocations().then(locations => {
+        if(locations.length !== locationsState.length) {
+          setLocationsState(locations)
+        }
+      })
+    }, 5000);
+    return () => window.clearInterval(timerId);
+  }, []);
 
   const startTracking = async () => {
     await Location.startLocationUpdatesAsync('bgLocation', {
@@ -42,8 +56,23 @@ export default function App() {
 
   return (
     <View style={styles.container}>
+      <MapView 
+        style={styles.map} 
+        region={
+          locationsState.length ?
+          {
+            latitude: locationsState[locationsState.length-1].coords.latitude, 
+            longitude: locationsState[locationsState.length-1].coords.longitude, latitudeDelta: 3, longitudeDelta: 3
+          }
+          :
+          {latitude: 53.558297, longitude: -1.635262, latitudeDelta: 9, longitudeDelta: 9}
+        }
+      >
+        {locationsState.length && <Marker coordinate={{latitude: locationsState[locationsState.length-1].coords.latitude, longitude: locationsState[locationsState.length-1].coords.longitude}}/>}
+        {locationsState.length && <Polyline coordinates={getPolyline(locationsState)}/>}
+      </MapView>
       <Button title='start tracking' onPress={startTracking}/>
-      <Button title='log' onPress={() => console.log(route)}/>
+      <Button title='log' onPress={logLocations}/>
       <Button title='stop tracking' onPress={stopTracking}/>
     </View>
   );
@@ -55,6 +84,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  map: {
+    width: Dimensions.get('window').width,
+    height: Dimensions.get('window').height * 0.9,
   },
 });
 
@@ -89,4 +122,15 @@ const getLocations = async () => {
 
 const setLocations = async (locations) => {
   await AsyncStorage.setItem(locationStorageName, JSON.stringify(locations));
+}
+
+const logLocations = async () => {
+  let json = await getLocations()
+  // console.log(json)
+}
+
+const getPolyline = (locations) => {
+    return locations.map(({ coords: { latitude, longitude } }) => {
+      return { latitude, longitude }
+  })
 }
