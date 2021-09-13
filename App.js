@@ -57,20 +57,14 @@ export default function App() {
     console.log('[tracking]', 'stopped background location task');
     await AsyncStorage.clear();
   }
+  const [region, setRegion] = useState({latitude: 53.558297, longitude: -1.635262, latitudeDelta: 9, longitudeDelta: 9});
 
   return (
     <View style={styles.container}>
       <MapView 
         style={styles.map}
-        region={
-          locationsState.length > 0 ?
-          {
-            latitude: locationsState[locationsState.length-1].coords.latitude, 
-            longitude: locationsState[locationsState.length-1].coords.longitude
-          }
-          :
-          {latitude: 53.558297, longitude: -1.635262, latitudeDelta: 9, longitudeDelta: 9}
-        }
+        region={region}
+        onRegionChangeComplete={region => setRegion(region)}
       >
         {locationsState.length > 0 && <Marker coordinate={{latitude: locationsState[locationsState.length-1].coords.latitude, longitude: locationsState[locationsState.length-1].coords.longitude}}/>}
         {locationsState.length > 0 && <Polyline coordinates={getPolyline(locationsState)}/>}
