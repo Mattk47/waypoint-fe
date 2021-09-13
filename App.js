@@ -28,6 +28,7 @@ export default function App() {
     const timerId = window.setInterval(() => {
       getLocations().then(locations => {
         if(locations.length !== locationsState.length) {
+          console.log(locations);
           setLocationsState(locations)
         }
       })
@@ -38,13 +39,15 @@ export default function App() {
   const startTracking = async () => {
     await Location.startLocationUpdatesAsync('bgLocation', {
       accuracy: Location.Accuracy.Balanced,
-      timeInterval: 3 * 1000,
-      distanceInterval: 0,
+      timeInterval: 10000,
+      distanceInterval: 20,
       foregroundService: {
         notificationTitle: 'Tracking is active',
         notificationBody: 'REcording your route',
         notificationColor: '#333333',
-      }
+      },
+      activityType: Location.ActivityType.Fitness,
+      showsBackgroundLocationIndicator: true
     });
     console.log('[tracking]', 'started background location task');
   }
@@ -52,27 +55,28 @@ export default function App() {
   const stopTracking = async () => {
     await Location.stopLocationUpdatesAsync('bgLocation');
     console.log('[tracking]', 'stopped background location task');
+    await AsyncStorage.clear();
   }
 
   return (
     <View style={styles.container}>
       <MapView 
-        style={styles.map} 
+        style={styles.map}
         region={
-          locationsState.length ?
+          locationsState.length > 0 ?
           {
             latitude: locationsState[locationsState.length-1].coords.latitude, 
-            longitude: locationsState[locationsState.length-1].coords.longitude, latitudeDelta: 3, longitudeDelta: 3
+            longitude: locationsState[locationsState.length-1].coords.longitude
           }
           :
           {latitude: 53.558297, longitude: -1.635262, latitudeDelta: 9, longitudeDelta: 9}
         }
       >
-        {locationsState.length && <Marker coordinate={{latitude: locationsState[locationsState.length-1].coords.latitude, longitude: locationsState[locationsState.length-1].coords.longitude}}/>}
-        {locationsState.length && <Polyline coordinates={getPolyline(locationsState)}/>}
+        {locationsState.length > 0 && <Marker coordinate={{latitude: locationsState[locationsState.length-1].coords.latitude, longitude: locationsState[locationsState.length-1].coords.longitude}}/>}
+        {locationsState.length > 0 && <Polyline coordinates={getPolyline(locationsState)}/>}
       </MapView>
       <Button title='start tracking' onPress={startTracking}/>
-      <Button title='log' onPress={logLocations}/>
+      {/* <Button title='log' onPress={logLocations}/> */}
       <Button title='stop tracking' onPress={stopTracking}/>
     </View>
   );
