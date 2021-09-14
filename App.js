@@ -36,9 +36,9 @@ export default function App() {
 
   const startTracking = async () => {
     await Location.startLocationUpdatesAsync('bgLocation', {
-      accuracy: Location.Accuracy.Balanced,
-      timeInterval: 10000,
-      distanceInterval: 20,
+      accuracy: Location.Accuracy.High,
+      timeInterval: 6000,
+      distanceInterval: 5,
       foregroundService: {
         notificationTitle: 'Tracking is active',
         notificationBody: 'REcording your route',
