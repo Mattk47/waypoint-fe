@@ -1,9 +1,9 @@
 import React from 'react'
 import { NavigationContainer } from '@react-navigation/native'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
-import Record from './src/components/Record'
-import Feed from './src/components/Feed'
-import Profile from './src/components/Profile'
+import Record from './src/Screens/Record'
+import Feed from './src/Screens/Feed'
+import Profile from './src/Screens/Profile'
 
 const Tab = createBottomTabNavigator()
 
