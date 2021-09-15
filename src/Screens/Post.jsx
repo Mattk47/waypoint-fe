@@ -55,7 +55,7 @@ const calcDelta = (coords) => {
   return {
     latitudeDelta,
     longitudeDelta,
-    centreLat: ((latitudeDelta / 2) + minLat) * zoomPadding,
-    centreLong: ((longitudeDelta / 2) + minLong) * zoomPadding
+    centreLat: (latitudeDelta / 2) + minLat,
+    centreLong: (longitudeDelta / 2) + minLong
   }
 }
