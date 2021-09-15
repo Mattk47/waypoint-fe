@@ -66,8 +66,8 @@ export default function Record() {
     <View style={styles.container}>
       <MapView 
         style={styles.map}
-        region={region}
-        onRegionChangeComplete={region => setRegion(region)}
+        region={locationsState.length > 0 ? ({latitude: locationsState[locationsState.length-1].coords.latitude, longitude: locationsState[locationsState.length-1].coords.longitude, latitudeDelta: 0.05, longitudeDelta: 0.05}) : ({latitude: 53.558297, longitude: -1.635262, latitudeDelta: 9, longitudeDelta: 9})}
+        // onRegionChangeComplete={region => setRegion(region)}
       >
         {locationsState.length > 0 && 
           <Marker 
@@ -96,7 +96,7 @@ const styles = StyleSheet.create({
   },
   map: {
     width: Dimensions.get('window').width,
-    height: Dimensions.get('window').height * 0.9,
+    height: Dimensions.get('window').height * 0.7,
   },
 });
 
