@@ -21,7 +21,7 @@ export default function App() {
         region={region}
         onRegionChangeComplete={region => setRegion(region)}
       >
-        <Polyline coordinates={gpxjson} lineDashPattern={[1]} />
+        <Polyline coordinates={gpxjson} lineDashPattern={[1]} strokeColor='red' />
       </MapView>
     </View>
   );
