@@ -21,7 +21,7 @@ export default function App() {
         region={region}
         onRegionChangeComplete={region => setRegion(region)}
       >
-        <Polyline coordinates={gpxjson} lineDashPattern={[1]} />
+        <Polyline coordinates={gpxjson} lineDashPattern={[1]} strokeColor='red' />
       </MapView>
     </View>
   );
@@ -55,7 +55,7 @@ const calcDelta = (coords) => {
   return {
     latitudeDelta,
     longitudeDelta,
-    centreLat: ((latitudeDelta / 2) + minLat) * zoomPadding,
-    centreLong: ((longitudeDelta / 2) + minLong) * zoomPadding
+    centreLat: (latitudeDelta / 2) + minLat,
+    centreLong: (longitudeDelta / 2) + minLong
   }
 }
