@@ -1,16 +1,32 @@
 import React from 'react';
-import { Text, View, StyleSheet, Dimensions, Image } from "react-native"
+import {
+  Text,
+  View,
+  StyleSheet,
+  Dimensions,
+  Image,
+  Pressable,
+} from 'react-native'
 
-export default Profile = () => {
+export default Profile = ({ navigation }) => {
   return (
     <View>
-
       <View style={ProfileStyles.card}>
-        <Image style={ProfileStyles.avatar} source={{uri: 'https://www.computerhope.com/jargon/g/guest-user.jpg'}} resizeMode='contain'/>
+        <Image
+          style={ProfileStyles.avatar}
+          source={{
+            uri: 'https://www.computerhope.com/jargon/g/guest-user.jpg',
+          }}
+          resizeMode="contain"
+        />
         <View style={ProfileStyles.content}>
           <Text style={ProfileStyles.text}>Username</Text>
-          <Text style={ProfileStyles.text}>Followers 50</Text>
-          <Text style={ProfileStyles.text}>Following 50</Text>
+          <Pressable onPress={() => navigation.navigate('Followers')}>
+            <Text style={ProfileStyles.text}>Followers 50</Text>
+          </Pressable>
+          <Pressable onPress={() => navigation.navigate('Following')}>
+            <Text style={ProfileStyles.text}>Following 50</Text>
+          </Pressable>
         </View>
       </View>
     </View>

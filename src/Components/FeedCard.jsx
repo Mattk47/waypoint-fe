@@ -17,20 +17,41 @@ const FeedCard = ({ nav }) => {
 
   return (
     <View style={FeedCardStyles.container}>
-      <Text style={FeedCardStyles.username}>Username</Text>
-      <MapView onPress={() => nav.navigate('Post')} style={FeedCardStyles.map} region={region} scrollEnabled={false} zoomEnabled={false}>
-        <Polyline coordinates={testRoute} lineDashPattern={[1]} strokeWidth={1} strokeColor='red'/>
+      <Pressable onPress={() => nav.navigate('UserProfile')}>
+        <Text style={FeedCardStyles.username}>Username</Text>
+      </Pressable>
+      <MapView
+        onPress={() => nav.navigate('Post')}
+        style={FeedCardStyles.map}
+        region={region}
+        scrollEnabled={false}
+        zoomEnabled={false}
+      >
+        <Polyline
+          coordinates={testRoute}
+          lineDashPattern={[1]}
+          strokeWidth={1}
+          strokeColor="red"
+        />
       </MapView>
       <View style={FeedCardStyles.content}>
         <Text>Saturday 10th Sept 2021</Text>
         <Text>Title</Text>
-        <Text numberOfLines={2}>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</Text>
+        <Text numberOfLines={2}>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+          eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad
+          minim veniam, quis nostrud exercitation ullamco laboris nisi ut
+          aliquip ex ea commodo consequat. Duis aute irure dolor in
+          reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
+          pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
+          culpa qui officia deserunt mollit anim id est laborum.
+        </Text>
         <Text>{`${likes} likes`}</Text>
         <Text>Comments</Text>
-        <LikeButton setLikes={setLikes}/> 
+        <LikeButton setLikes={setLikes} />
       </View>
     </View>
-  );
+  )
 };
 
 export default FeedCard;
