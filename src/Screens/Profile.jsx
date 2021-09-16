@@ -1,46 +1,102 @@
 import React from 'react';
-import { Text, View, StyleSheet, Dimensions, Image } from "react-native"
+import {
+  Text,
+  View,
+  StyleSheet,
+  Dimensions,
+  Image,
+  Pressable,
+} from 'react-native'
 
-export default Profile = () => {
+export default Profile = ({ navigation }) => {
   return (
-    <View>
-
-      <View style={ProfileStyles.card}>
-        <Image style={ProfileStyles.avatar} source={{uri: 'https://www.computerhope.com/jargon/g/guest-user.jpg'}} resizeMode='contain'/>
+    <View style={ProfileStyles.card}>
+      <View style={ProfileStyles.rowOne}>
+        <Image
+          style={ProfileStyles.avatar}
+          source={{
+            uri: 'https://www.computerhope.com/jargon/g/guest-user.jpg',
+          }}
+          resizeMode="contain"
+        />
         <View style={ProfileStyles.content}>
-          <Text style={ProfileStyles.text}>Username</Text>
-          <Text style={ProfileStyles.text}>Followers 50</Text>
-          <Text style={ProfileStyles.text}>Following 50</Text>
+          <Text style={ProfileStyles.text}>firstName lastName</Text>
+          <View style={ProfileStyles.counters}>
+            <Pressable>
+              <View style={ProfileStyles.counter}>
+                <Text style={ProfileStyles.label}>Posts</Text>
+                <Text style={ProfileStyles.numberOf}>5</Text>
+              </View>
+            </Pressable>
+            <Pressable onPress={() => navigation.navigate('Followers')}>
+              <View style={ProfileStyles.counter}>
+                <Text style={ProfileStyles.label}>Followers</Text>
+                <Text style={ProfileStyles.numberOf}>50</Text>
+              </View>
+            </Pressable>
+            <Pressable onPress={() => navigation.navigate('Following')}>
+              <View style={[ProfileStyles.counter, { borderRightWidth: 0 }]}>
+                <Text style={ProfileStyles.label}>Following</Text>
+                <Text style={ProfileStyles.numberOf}>50</Text>
+              </View>
+            </Pressable>
+          </View>
         </View>
       </View>
+      <Text style={ProfileStyles.bio}>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+        tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
+        veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
+        commodo consequat.
+      </Text>
     </View>
   )
 }
 
 const ProfileStyles = StyleSheet.create({
   card: {
-    padding: 10,
     width: Dimensions.get('window').width,
-    height: 200,
+    backgroundColor: '#fff',
+    // borderBottomWidth: 1,
+    // borderTopWidth: 1,
+    padding: 15,
+  },
+  rowOne: {
     flexDirection: 'row',
-    borderTopWidth: 1,
-    borderBottomWidth: 1
-  }, 
+    marginBottom: 10,
+    paddingBottom: 10,
+    borderBottomWidth: 1,
+    borderColor: 'darkgrey',
+  },
   avatar: {
     padding: 5,
-    flex: 1,
-    width: '100%',
-    height: 'auto',
+    width: 100,
+    height: 100,
     overflow: 'hidden',
+    borderRadius: 50,
   },
   content: {
-    paddingTop: 22,
+    paddingTop: 10,
     paddingLeft: 20,
-    flex: 2,
   },
   text: {
     fontSize: 20,
     fontWeight: 'bold',
-    marginBottom: 10
-  }
+    marginBottom: 10,
+  },
+  counters: {
+    flexDirection: 'row',
+  },
+  counter: {
+    paddingRight: 15,
+    marginRight: 15,
+    borderRightWidth: 1,
+    borderRightColor: 'darkgrey',
+  },
+  label: {},
+  numberOf: {
+    fontSize: 20,
+    textAlign: 'center',
+    fontWeight: 'bold',
+  },
 })

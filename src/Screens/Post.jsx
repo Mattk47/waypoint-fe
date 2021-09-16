@@ -1,30 +1,44 @@
 import React from 'react';
 import { StyleSheet, View, Dimensions } from 'react-native'
 import { useState } from 'react';
-import MapView, { Polyline } from 'react-native-maps'
+import MapView, { Marker, Polyline } from 'react-native-maps'
 import gpxjson from '../../assets/gpx-testdata.js'
+import poiData from '../../assets/poi-textdata.js'
 
 export default function App() {
   const initialRegion = calcDelta(gpxjson)
 
   const [region, setRegion] = useState({
-    latitude: initialRegion.centreLat, 
-    longitude: initialRegion.centreLong, 
-    latitudeDelta: initialRegion.latitudeDelta, 
-    longitudeDelta: initialRegion.longitudeDelta
-  });
+    latitude: initialRegion.centreLat,
+    longitude: initialRegion.centreLong,
+    latitudeDelta: initialRegion.latitudeDelta,
+    longitudeDelta: initialRegion.longitudeDelta,
+  })
 
   return (
     <View style={styles.container}>
-      <MapView 
+      <MapView
         style={styles.map}
         region={region}
-        onRegionChangeComplete={region => setRegion(region)}
+        onRegionChangeComplete={(region) => setRegion(region)}
       >
-        <Polyline coordinates={gpxjson} lineDashPattern={[1]} strokeColor='red' />
+        <Marker key="start" coordinate={gpxjson[0]} pinColor="green" />
+        {poiData.map((poi, i) => {
+          return <Marker key={i} coordinate={poi} pinColor="blue" />
+        })}
+        <Marker
+          key="finish"
+          coordinate={gpxjson[gpxjson.length - 1]}
+          pinColor="red"
+        />
+        <Polyline
+          coordinates={gpxjson}
+          lineDashPattern={[1]}
+          strokeColor="red"
+        />
       </MapView>
     </View>
-  );
+  )
 }
 
 const styles = StyleSheet.create({
