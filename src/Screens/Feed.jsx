@@ -1,17 +1,30 @@
-import React from 'react';
-import { StyleSheet, FlatList, Text, View, ScrollView, Pressable } from "react-native";
-import FeedCard from '../Components/FeedCard';
+import React, { useEffect, useState } from 'react'
+import { StyleSheet, FlatList } from 'react-native'
+import { getAllRoutes } from '../../api'
+import FeedCard from '../Components/FeedCard'
 
-export default Feed = ({ navigation }) => {
+export default Feed = () => {
+  const [routes, setRoutes] = useState([])
+
+  useEffect(() => {
+    getAllRoutes()
+      .then(({ routes }) => {
+        setRoutes([routes[0], routes[1], routes[2]])
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+  }, [])
+
+  const renderRoute = (route) => <FeedCard route={route} />
+
   return (
-    <ScrollView style={styles.container}>
-      <FeedCard nav={navigation}/>
-      <FeedCard nav={navigation}/>
-      <FeedCard nav={navigation}/>
-    </ScrollView>
+    <FlatList
+      data={routes}
+      renderItem={renderRoute}
+      keyExtractor={(route) => route._id}
+    />
   )
 }
 
-const styles = StyleSheet.create({
-
-});
+const styles = StyleSheet.create({})
