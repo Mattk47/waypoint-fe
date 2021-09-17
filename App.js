@@ -1,9 +1,10 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { NavigationContainer } from '@react-navigation/native'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import Record from './src/Screens/Record'
 import FeedNavigator from './src/Navigators/FeedNavigator'
 import ProfileNavigator from './src/Navigators/ProfileNavigator'
+import LoggedOutNavigator from './src/Navigators/LoggedOutNavigator'
 
 const Tab = createBottomTabNavigator()
 
@@ -23,10 +24,21 @@ export const AppNavigator = () => (
   </Tab.Navigator>
 )
 
-const App = () => (
-  <NavigationContainer>
-    <AppNavigator />
-  </NavigationContainer>
-)
+const App = () => {
+  const [userLoggedIn, setUserLoggedIn] = useState()
+
+  if (!userLoggedIn) {
+    return (
+      <NavigationContainer>
+        <LoggedOutNavigator />
+      </NavigationContainer>
+    )
+  }
+  return (
+    <NavigationContainer>
+      <AppNavigator />
+    </NavigationContainer>
+  )
+}
 
 export default App
