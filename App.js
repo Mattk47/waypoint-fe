@@ -30,7 +30,7 @@ const App = () => {
   if (!userLoggedIn) {
     return (
       <NavigationContainer>
-        <LoggedOutNavigator />
+        <LoggedOutNavigator setUserLoggedIn={setUserLoggedIn} />
       </NavigationContainer>
     )
   }
