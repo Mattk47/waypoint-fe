@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react'
 import {
   Text,
   View,
@@ -7,20 +7,38 @@ import {
   Image,
   Pressable,
 } from 'react-native'
+import { getUser } from '../../api'
 
 export default Profile = ({ navigation }) => {
+  const [user, setUser] = useState({})
+
+  let username = 'Hudson_Ankunding'
+
+  useEffect(() => {
+    getUser(username)
+      .then(({ user }) => {
+        navigation.setOptions({ title: user.username })
+        setUser(user)
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+  }, [])
+
+  const { name, bio, avatar_url } = user
+
   return (
     <View style={ProfileStyles.card}>
       <View style={ProfileStyles.rowOne}>
         <Image
           style={ProfileStyles.avatar}
           source={{
-            uri: 'https://www.computerhope.com/jargon/g/guest-user.jpg',
+            uri: avatar_url,
           }}
           resizeMode="contain"
         />
         <View style={ProfileStyles.content}>
-          <Text style={ProfileStyles.text}>firstName lastName</Text>
+          <Text style={ProfileStyles.text}>{name}</Text>
           <View style={ProfileStyles.counters}>
             <Pressable>
               <View style={ProfileStyles.counter}>
@@ -43,12 +61,7 @@ export default Profile = ({ navigation }) => {
           </View>
         </View>
       </View>
-      <Text style={ProfileStyles.bio}>
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-        tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
-        veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-        commodo consequat.
-      </Text>
+      <Text style={ProfileStyles.bio}>{bio}</Text>
     </View>
   )
 }
@@ -64,7 +77,7 @@ const ProfileStyles = StyleSheet.create({
   rowOne: {
     flexDirection: 'row',
     marginBottom: 10,
-    paddingBottom: 10,
+    paddingBottom: 15,
     borderBottomWidth: 1,
     borderColor: 'darkgrey',
   },
@@ -74,6 +87,8 @@ const ProfileStyles = StyleSheet.create({
     height: 100,
     overflow: 'hidden',
     borderRadius: 50,
+    borderColor: 'black',
+    borderWidth: 1,
   },
   content: {
     paddingTop: 10,
