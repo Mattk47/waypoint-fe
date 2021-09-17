@@ -4,7 +4,8 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import Record from './src/Screens/Record'
 import FeedNavigator from './src/Navigators/FeedNavigator'
 import ProfileNavigator from './src/Navigators/ProfileNavigator'
-import LoggedOutNavigator from './src/Navigators/LoggedOutNavigator'
+// import LoggedOutNavigator from './src/Navigators/LoggedOutNavigator'
+// import testUser from './dummyUser'
 
 const Tab = createBottomTabNavigator()
 
@@ -25,18 +26,13 @@ export const AppNavigator = () => (
 )
 
 const App = () => {
-  const [userLoggedIn, setUserLoggedIn] = useState()
+  // const [userLoggedIn, setUserLoggedIn] = useState(true)
+  // const [user, setUser] = useState(testUser)
 
-  if (!userLoggedIn) {
-    return (
-      <NavigationContainer>
-        <LoggedOutNavigator setUserLoggedIn={setUserLoggedIn} />
-      </NavigationContainer>
-    )
-  }
   return (
     <NavigationContainer>
       <AppNavigator />
+      {/* {userLoggedIn ? <AppNavigator /> : <LoggedOutNavigator />} */}
     </NavigationContainer>
   )
 }
