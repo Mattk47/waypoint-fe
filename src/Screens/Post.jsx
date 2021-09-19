@@ -2,8 +2,6 @@ import React, { useEffect } from 'react'
 import { StyleSheet, View, Dimensions } from 'react-native'
 import { useState } from 'react'
 import MapView, { Marker, Polyline } from 'react-native-maps'
-import gpxjson from '../../assets/gpx-testdata.js'
-import poiData from '../../assets/poi-textdata.js'
 import { getPoiByRouteById, getRouteById } from '../../api.js'
 
 export default function Post({ route }) {
@@ -23,7 +21,6 @@ export default function Post({ route }) {
       })
     getPoiByRouteById(route_id)
       .then(({ pois }) => {
-        console.log(pois)
         setPoints(pois)
       })
       .catch((err) => {
@@ -59,7 +56,6 @@ export default function Post({ route }) {
         <Marker key="start" coordinate={path[0]} pinColor="green" />
         {points.length > 0 &&
           points.map((point, i) => {
-            console.log(point._id)
             return (
               <Marker
                 key={i}
