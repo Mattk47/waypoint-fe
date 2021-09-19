@@ -13,9 +13,10 @@ import ViewMoreText from 'react-native-view-more-text'
 import { getTimeSince } from '../Utils/helper-function'
 import { useNavigation } from '@react-navigation/native'
 
-const FeedCard = ({ route }) => {
+const FeedCard = ({ route, hideName }) => {
   const navigation = useNavigation()
-  let { _id, title, description, user_id, coords, createdAt } = route.item
+  let { _id, title, description, user_id, coords, createdAt, likes } =
+    route.item
 
   if (!coords) coords = [{ latitude: 0, longitude: 0 }]
   let path = coords.map((coord) => {
@@ -30,7 +31,7 @@ const FeedCard = ({ route }) => {
     latitudeDelta: initialRegion.latitudeDelta,
     longitudeDelta: initialRegion.longitudeDelta,
   })
-  const [likes, setLikes] = useState(5)
+  const [routeLikes, setRouteLikes] = useState(likes)
 
   function renderViewMore(onPress) {
     return (
@@ -55,18 +56,22 @@ const FeedCard = ({ route }) => {
 
   return (
     <View style={FeedCardStyles.container}>
-      <Pressable onPress={() => navigation.navigate('UserProfile')}>
-        <View style={FeedCardStyles.userContainer}>
-          <Image
-            style={FeedCardStyles.avatar}
-            source={{
-              uri: 'https://www.computerhope.com/jargon/g/guest-user.jpg',
-            }}
-            resizeMode="contain"
-          />
-          <Text style={FeedCardStyles.username}>{user_id}</Text>
-        </View>
-      </Pressable>
+      {!hideName && (
+        <Pressable
+          onPress={() => navigation.navigate('UserProfile', { user_id })}
+        >
+          <View style={FeedCardStyles.userContainer}>
+            <Image
+              style={FeedCardStyles.avatar}
+              source={{
+                uri: 'https://www.computerhope.com/jargon/g/guest-user.jpg',
+              }}
+              resizeMode="contain"
+            />
+            <Text style={FeedCardStyles.username}>{user_id}</Text>
+          </View>
+        </Pressable>
+      )}
       <Text style={FeedCardStyles.title}>{title}</Text>
       <MapView
         onPress={() =>
@@ -95,12 +100,12 @@ const FeedCard = ({ route }) => {
         >
           <Text>{description}</Text>
         </ViewMoreText>
-        <Text>{`${likes} likes`}</Text>
+        <Text>{`${routeLikes} likes`}</Text>
         <Pressable onPress={() => navigation.navigate('Comments')}>
           <Text>View all comments</Text>
         </Pressable>
         <Text>{getTimeSince(createdAt)}</Text>
-        <LikeButton setLikes={setLikes} />
+        <LikeButton setLikes={setRouteLikes} route_id={_id} />
       </View>
     </View>
   )
