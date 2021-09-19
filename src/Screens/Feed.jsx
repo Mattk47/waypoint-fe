@@ -3,26 +3,31 @@ import { StyleSheet, FlatList } from 'react-native'
 import { getAllRoutes } from '../../api'
 import FeedCard from '../Components/FeedCard'
 
-export default Feed = () => {
+export default Feed = ({ user_id, hideName }) => {
   const [routes, setRoutes] = useState([])
+  const [page, setPage] = useState(1)
 
   useEffect(() => {
-    getAllRoutes()
+    getAllRoutes(page, user_id)
       .then(({ routes }) => {
-        setRoutes([routes[0], routes[1], routes[2]])
+        setRoutes((curr) => {
+          return [...new Set([...curr, ...routes])]
+        })
       })
       .catch((err) => {
         console.log(err)
       })
-  }, [])
+  }, [page])
 
-  const renderRoute = (route) => <FeedCard route={route} />
+  const renderRoute = (route) => <FeedCard route={route} hideName={hideName} />
 
   return (
     <FlatList
       data={routes}
       renderItem={renderRoute}
       keyExtractor={(route) => route._id}
+      onEndReached={() => setPage((curr) => curr + 1)}
+      onEndReachedThreshold={2}
     />
   )
 }
