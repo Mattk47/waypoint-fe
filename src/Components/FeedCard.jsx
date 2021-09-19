@@ -11,9 +11,11 @@ import MapView, { Polyline } from 'react-native-maps'
 import LikeButton from './LikeButton'
 import ViewMoreText from 'react-native-view-more-text'
 import { getTimeSince } from '../Utils/helper-function'
+import { useNavigation } from '@react-navigation/native'
 
-const FeedCard = ({ nav, route }) => {
-  let { title, description, user_id, coords, createdAt } = route.item
+const FeedCard = ({ route }) => {
+  const navigation = useNavigation()
+  let { _id, title, description, user_id, coords, createdAt } = route.item
 
   if (!coords) coords = [{ latitude: 0, longitude: 0 }]
   let path = coords.map((coord) => {
@@ -53,7 +55,7 @@ const FeedCard = ({ nav, route }) => {
 
   return (
     <View style={FeedCardStyles.container}>
-      <Pressable onPress={() => nav.navigate('UserProfile')}>
+      <Pressable onPress={() => navigation.navigate('UserProfile')}>
         <View style={FeedCardStyles.userContainer}>
           <Image
             style={FeedCardStyles.avatar}
@@ -67,7 +69,11 @@ const FeedCard = ({ nav, route }) => {
       </Pressable>
       <Text style={FeedCardStyles.title}>{title}</Text>
       <MapView
-        onPress={() => nav.navigate('Post')}
+        onPress={() =>
+          navigation.navigate('Post', {
+            route_id: _id,
+          })
+        }
         style={FeedCardStyles.map}
         region={region}
         scrollEnabled={false}
@@ -90,7 +96,7 @@ const FeedCard = ({ nav, route }) => {
           <Text>{description}</Text>
         </ViewMoreText>
         <Text>{`${likes} likes`}</Text>
-        <Pressable onPress={() => nav.navigate('Comments')}>
+        <Pressable onPress={() => navigation.navigate('Comments')}>
           <Text>View all comments</Text>
         </Pressable>
         <Text>{getTimeSince(createdAt)}</Text>
