@@ -39,7 +39,7 @@ export default Profile = ({ route, navigation }) => {
             source={{
               uri: avatar_url,
             }}
-            resizeMode="contain"
+            resizeMode="cover"
           />
           <View style={ProfileStyles.content}>
             <Text style={ProfileStyles.text}>{name}</Text>
