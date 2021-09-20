@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from 'react'
 import {
   Text,
   View,
@@ -8,12 +8,22 @@ import {
   Image,
 } from 'react-native'
 import MapView, { Polyline } from 'react-native-maps'
-import testRoute from '../../assets/gpx-testdata'
 import LikeButton from './LikeButton'
 import ViewMoreText from 'react-native-view-more-text'
+import { getTimeSince } from '../Utils/helper-function'
+import { useNavigation } from '@react-navigation/native'
 
-const FeedCard = ({ nav }) => {
-  const initialRegion = calcDelta(testRoute)
+const FeedCard = ({ route, hideName }) => {
+  const navigation = useNavigation()
+  let { _id, title, description, user_id, coords, createdAt, likes } =
+    route.item
+
+  if (!coords) coords = [{ latitude: 0, longitude: 0 }]
+  let path = coords.map((coord) => {
+    return { latitude: +coord.latitude, longitude: +coord.longitude }
+  })
+
+  const initialRegion = calcDelta(path)
 
   const [region, setRegion] = useState({
     latitude: initialRegion.centreLat,
@@ -21,7 +31,7 @@ const FeedCard = ({ nav }) => {
     latitudeDelta: initialRegion.latitudeDelta,
     longitudeDelta: initialRegion.longitudeDelta,
   })
-  const [likes, setLikes] = useState(5)
+  const [routeLikes, setRouteLikes] = useState(likes)
 
   function renderViewMore(onPress) {
     return (
@@ -46,56 +56,56 @@ const FeedCard = ({ nav }) => {
 
   return (
     <View style={FeedCardStyles.container}>
-      <Pressable onPress={() => nav.navigate('UserProfile')}>
-        <View style={FeedCardStyles.userContainer}>
-          <Image
-            style={FeedCardStyles.avatar}
-            source={{
-              uri: 'https://www.computerhope.com/jargon/g/guest-user.jpg',
-            }}
-            resizeMode="contain"
-          />
-          <Text style={FeedCardStyles.username}>Username</Text>
-        </View>
-      </Pressable>
-      <Text style={FeedCardStyles.title}>Title goes here</Text>
+      {!hideName && (
+        <Pressable
+          onPress={() => navigation.navigate('UserProfile', { user_id })}
+        >
+          <View style={FeedCardStyles.userContainer}>
+            <Image
+              style={FeedCardStyles.avatar}
+              source={{
+                uri: 'https://www.computerhope.com/jargon/g/guest-user.jpg',
+              }}
+              resizeMode="contain"
+            />
+            <Text style={FeedCardStyles.username}>{user_id}</Text>
+          </View>
+        </Pressable>
+      )}
+      <Text style={FeedCardStyles.title}>{title}</Text>
       <MapView
-        onPress={() => nav.navigate('Post')}
+        onPress={() =>
+          navigation.navigate('Post', {
+            route_id: _id,
+          })
+        }
         style={FeedCardStyles.map}
         region={region}
         scrollEnabled={false}
         zoomEnabled={false}
       >
         <Polyline
-          coordinates={testRoute}
+          coordinates={path}
           lineDashPattern={[1]}
           strokeWidth={1}
           strokeColor="red"
         />
       </MapView>
       <View style={FeedCardStyles.content}>
-        <Text>Saturday 10th Sept 2021</Text>
         <ViewMoreText
           numberOfLines={2}
           renderViewMore={renderViewMore}
           renderViewLess={renderViewLess}
           textStyle={{ textAlign: 'left' }}
         >
-          <Text>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-            eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
-            ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-            aliquip ex ea commodo consequat. Duis aute irure dolor in
-            reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
-            pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-            culpa qui officia deserunt mollit anim id est laborum.
-          </Text>
+          <Text>{description}</Text>
         </ViewMoreText>
-        <Text>{`${likes} likes`}</Text>
-        <Pressable onPress={() => nav.navigate('Comments')}>
+        <Text>{`${routeLikes} likes`}</Text>
+        <Pressable onPress={() => navigation.navigate('Comments')}>
           <Text>View all comments</Text>
         </Pressable>
-        <LikeButton setLikes={setLikes} />
+        <Text>{getTimeSince(createdAt)}</Text>
+        <LikeButton setLikes={setRouteLikes} route_id={_id} />
       </View>
     </View>
   )
@@ -151,8 +161,10 @@ const FeedCardStyles = StyleSheet.create({
 
 const calcDelta = (coords) => {
   const zoomPadding = 1.2
-  let maxLong = coords[0].longitude, minLong = coords[0].longitude
-  let maxLat = coords[0].latitude, minLat = coords[0].latitude
+  let maxLong = coords[0].longitude,
+    minLong = coords[0].longitude
+  let maxLat = coords[0].latitude,
+    minLat = coords[0].latitude
 
   for (let point of coords) {
     if (point.longitude > maxLong) maxLong = point.longitude
@@ -167,7 +179,7 @@ const calcDelta = (coords) => {
   return {
     latitudeDelta,
     longitudeDelta,
-    centreLat: (latitudeDelta / 2) + minLat,
-    centreLong: (longitudeDelta / 2) + minLong
+    centreLat: latitudeDelta / 2 + minLat,
+    centreLong: longitudeDelta / 2 + minLong,
   }
 }

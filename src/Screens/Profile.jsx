@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react'
 import {
   Text,
   View,
@@ -7,49 +7,72 @@ import {
   Image,
   Pressable,
 } from 'react-native'
+import { getUser } from '../../api'
+import Feed from './Feed'
 
-export default Profile = ({ navigation }) => {
+export default Profile = ({ route, navigation }) => {
+  const { user_id } = route.params || { user_id: '61443edda1bdaadc3bf95f10' }
+  const [user, setUser] = useState({})
+
+  useEffect(() => {
+    getUser(user_id)
+      .then(({ user }) => {
+        navigation.setOptions({ title: user.username })
+        setUser(user)
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+  }, [])
+
+  const { name, bio, avatar_url } = user
+  const follow = Math.ceil(Math.random() * 500)
+  const max = Math.floor(follow * 1.1)
+  const min = Math.ceil(follow * 0.9)
+
   return (
-    <View style={ProfileStyles.card}>
-      <View style={ProfileStyles.rowOne}>
-        <Image
-          style={ProfileStyles.avatar}
-          source={{
-            uri: 'https://www.computerhope.com/jargon/g/guest-user.jpg',
-          }}
-          resizeMode="contain"
-        />
-        <View style={ProfileStyles.content}>
-          <Text style={ProfileStyles.text}>firstName lastName</Text>
-          <View style={ProfileStyles.counters}>
-            <Pressable>
-              <View style={ProfileStyles.counter}>
-                <Text style={ProfileStyles.label}>Posts</Text>
-                <Text style={ProfileStyles.numberOf}>5</Text>
-              </View>
-            </Pressable>
-            <Pressable onPress={() => navigation.navigate('Followers')}>
-              <View style={ProfileStyles.counter}>
-                <Text style={ProfileStyles.label}>Followers</Text>
-                <Text style={ProfileStyles.numberOf}>50</Text>
-              </View>
-            </Pressable>
-            <Pressable onPress={() => navigation.navigate('Following')}>
-              <View style={[ProfileStyles.counter, { borderRightWidth: 0 }]}>
-                <Text style={ProfileStyles.label}>Following</Text>
-                <Text style={ProfileStyles.numberOf}>50</Text>
-              </View>
-            </Pressable>
+    <>
+      <View style={ProfileStyles.card}>
+        <View style={ProfileStyles.rowOne}>
+          <Image
+            style={ProfileStyles.avatar}
+            source={{
+              uri: avatar_url,
+            }}
+            resizeMode="contain"
+          />
+          <View style={ProfileStyles.content}>
+            <Text style={ProfileStyles.text}>{name}</Text>
+            <View style={ProfileStyles.counters}>
+              <Pressable>
+                <View style={ProfileStyles.counter}>
+                  <Text style={ProfileStyles.label}>Posts</Text>
+                  <Text style={ProfileStyles.numberOf}>
+                    {Math.ceil(Math.random() * 50)}
+                  </Text>
+                </View>
+              </Pressable>
+              <Pressable onPress={() => navigation.navigate('Followers')}>
+                <View style={ProfileStyles.counter}>
+                  <Text style={ProfileStyles.label}>Followers</Text>
+                  <Text style={ProfileStyles.numberOf}>{follow}</Text>
+                </View>
+              </Pressable>
+              <Pressable onPress={() => navigation.navigate('Following')}>
+                <View style={[ProfileStyles.counter, { borderRightWidth: 0 }]}>
+                  <Text style={ProfileStyles.label}>Following</Text>
+                  <Text style={ProfileStyles.numberOf}>
+                    {Math.floor(Math.random() * (max - min + 1) + min)}
+                  </Text>
+                </View>
+              </Pressable>
+            </View>
           </View>
         </View>
+        <Text style={ProfileStyles.bio}>{bio}</Text>
       </View>
-      <Text style={ProfileStyles.bio}>
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-        tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
-        veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-        commodo consequat.
-      </Text>
-    </View>
+      <Feed user_id={user_id} hideName={true} />
+    </>
   )
 }
 
@@ -57,14 +80,16 @@ const ProfileStyles = StyleSheet.create({
   card: {
     width: Dimensions.get('window').width,
     backgroundColor: '#fff',
-    // borderBottomWidth: 1,
+    borderBottomWidth: 1,
+    borderColor: 'darkgrey',
     // borderTopWidth: 1,
     padding: 15,
+    // marginBottom: 10,
   },
   rowOne: {
     flexDirection: 'row',
     marginBottom: 10,
-    paddingBottom: 10,
+    paddingBottom: 15,
     borderBottomWidth: 1,
     borderColor: 'darkgrey',
   },
@@ -74,6 +99,8 @@ const ProfileStyles = StyleSheet.create({
     height: 100,
     overflow: 'hidden',
     borderRadius: 50,
+    borderColor: 'black',
+    borderWidth: 1,
   },
   content: {
     paddingTop: 10,

@@ -15,8 +15,8 @@ export default FeedNavigator = () => {
       <Stack.Screen name="Comments" component={Comments} />
       <Stack.Screen
         name="UserProfile"
-        component={ProfileNavigator}
-        options={{ headerShown: false }}
+        component={Profile}
+        // options={{ headerShown: false }}
       />
     </Stack.Navigator>
   )

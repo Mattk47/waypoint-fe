@@ -4,8 +4,8 @@ const api = axios.create({
   baseURL: 'https://waypoint-server.herokuapp.com/api',
 })
 
-export const getUser = async (username) => {
-  const { data } = await api.get(`/users/${username}`)
+export const getUser = async (user_id) => {
+  const { data } = await api.get(`/users/${user_id}`)
   return data
 }
 
@@ -38,8 +38,10 @@ export const getRouteByUser = async (username) => {
   return data
 }
 
-export const getAllRoutes = async () => {
-  const { data } = await api.get('/routes')
+export const getAllRoutes = async (page, user_id) => {
+  const userObj = { page }
+  if (user_id) userObj.user_id = user_id
+  const { data } = await api.get('/routes', { params: userObj })
   return data
 }
 
@@ -53,8 +55,8 @@ export const postRoute = async (routeObj) => {
   return data
 }
 
-export const patchRouteById = async (routeId, vote) => {
-  const { data } = await api.patch(`/routes/${routeId}`, { vote })
+export const patchRouteById = async (routeId, likes) => {
+  const { data } = await api.patch(`/routes/${routeId}`, { likes })
   return data
 }
 
