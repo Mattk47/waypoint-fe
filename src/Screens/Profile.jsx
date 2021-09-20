@@ -11,7 +11,7 @@ import { getUser } from '../../api'
 import Feed from './Feed'
 
 export default Profile = ({ route, navigation }) => {
-  const { user_id } = route.params || { user_id: '61443edda1bdaadc3bf95f10' }
+  const { user_id } = route.params || { user_id: '61485b4b2e8ed0bd929b436f' }
   const [user, setUser] = useState({})
 
   useEffect(() => {
