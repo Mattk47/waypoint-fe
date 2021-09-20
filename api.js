@@ -87,8 +87,10 @@ export const deletePoi = async (poiId) => {
   const { data } = await api.delete(`/poi/${poiId}`)
   return data
 }
-export const getCommentsByRoute = async (routeId) => {
-  const { data } = await api.get(`/routes/${routeId}/comments`)
+export const getCommentsByRoute = async (page, routeId) => {
+  const { data } = await api.get(`/routes/${routeId}/comments`, {
+    params: { page },
+  })
   return data
 }
 
