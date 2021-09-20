@@ -29,6 +29,8 @@ export const AppNavigator = () => (
 const App = () => {
   const [appUser, setAppUser] = useState({
     user_id: '61485b4b2e8ed0bd929b436f',
+    username: 'NovellaBayer',
+    avatar_url: 'http://placeimg.com/640/480',
   })
   // const [userLoggedIn, setUserLoggedIn] = useState(true)
   // const [user, setUser] = useState(testUser)
