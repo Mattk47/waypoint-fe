@@ -6,10 +6,12 @@ import FeedCard from '../Components/FeedCard'
 export default Feed = ({ user_id, hideName }) => {
   const [routes, setRoutes] = useState([])
   const [page, setPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(1)
 
   useEffect(() => {
     getAllRoutes(page, user_id)
-      .then(({ routes }) => {
+      .then(({ routes, totalPages }) => {
+        setTotalPages(totalPages)
         setRoutes((curr) => {
           return [...new Set([...curr, ...routes])]
         })
@@ -26,7 +28,9 @@ export default Feed = ({ user_id, hideName }) => {
       data={routes}
       renderItem={renderRoute}
       keyExtractor={(route) => route._id}
-      onEndReached={() => setPage((curr) => curr + 1)}
+      onEndReached={() => {
+        if (page < totalPages) setPage((curr) => curr + 1)
+      }}
       onEndReachedThreshold={2}
     />
   )
