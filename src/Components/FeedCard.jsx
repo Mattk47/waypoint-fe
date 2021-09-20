@@ -68,7 +68,7 @@ const FeedCard = ({ route, hideName }) => {
               source={{
                 uri: user_id.avatar_url,
               }}
-              resizeMode="contain"
+              resizeMode="cover"
             />
             <Text style={FeedCardStyles.username}>{user_id.username}</Text>
           </View>
@@ -103,7 +103,13 @@ const FeedCard = ({ route, hideName }) => {
           <Text>{description}</Text>
         </ViewMoreText>
         <Text>{`${routeLikes} likes`}</Text>
-        <Pressable onPress={() => navigation.navigate('Comments')}>
+        <Pressable
+          onPress={() =>
+            navigation.navigate('Comments', {
+              route_id: _id,
+            })
+          }
+        >
           <Text>View all comments</Text>
         </Pressable>
         <Text>{getTimeSince(createdAt)}</Text>
