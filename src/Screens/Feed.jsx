@@ -3,15 +3,16 @@ import { StyleSheet, FlatList } from 'react-native'
 import { getAllRoutes } from '../../api'
 import FeedCard from '../Components/FeedCard'
 
-export default Feed = ({ user_id, hideName }) => {
+export default Feed = ({ user_id, hideName, setPostCount }) => {
   const [routes, setRoutes] = useState([])
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
 
   useEffect(() => {
     getAllRoutes(page, user_id)
-      .then(({ routes, totalPages }) => {
+      .then(({ routes, totalPages, totalResults }) => {
         setTotalPages(totalPages)
+        setPostCount && setPostCount(totalResults)
         setRoutes((curr) => {
           return [...new Set([...curr, ...routes])]
         })
