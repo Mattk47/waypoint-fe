@@ -3,12 +3,15 @@ import { StyleSheet, View, Dimensions } from 'react-native'
 import { useState } from 'react'
 import MapView, { Marker, Polyline } from 'react-native-maps'
 import { getPoiByRouteById, getRouteById } from '../../api.js'
+import PopUpWindow from '../Components/PopUpWindow.jsx'
 
 export default function Post({ route }) {
   const [post, setPost] = useState({
     coords: [{ latitude: 0, longitude: 0 }],
   })
   const [points, setPoints] = useState([])
+  const [pointDetails, setPointDetails] = useState()
+  const [windowOpen, setWindowOpen] = useState(false)
   const { route_id } = route.params
 
   useEffect(() => {
@@ -41,6 +44,13 @@ export default function Post({ route }) {
   //   longitudeDelta: initialRegion.longitudeDelta,
   // })
 
+  const popupWindow = (poiObj) => {
+    if (!windowOpen) {
+      setWindowOpen(true)
+      setPointDetails(poiObj)
+    }
+  }
+
   return (
     <View style={styles.container}>
       <MapView
@@ -51,6 +61,8 @@ export default function Post({ route }) {
           latitudeDelta: initialRegion.latitudeDelta,
           longitudeDelta: initialRegion.longitudeDelta,
         }}
+        scrollEnabled={!windowOpen}
+        zoomEnabled={!windowOpen}
         // onRegionChangeComplete={(region) => setRegion(region)}
       >
         <Marker key="start" coordinate={path[0]} pinColor="green" />
@@ -64,6 +76,7 @@ export default function Post({ route }) {
                   longitude: point.coords.longitude,
                 }}
                 pinColor="blue"
+                onPress={() => popupWindow(point)}
               />
             )
           })}
@@ -74,6 +87,9 @@ export default function Post({ route }) {
         />
         <Polyline coordinates={path} lineDashPattern={[1]} strokeColor="red" />
       </MapView>
+      {windowOpen && (
+        <PopUpWindow details={pointDetails} setWindowOpen={setWindowOpen} />
+      )}
     </View>
   )
 }
