@@ -58,17 +58,19 @@ const FeedCard = ({ route, hideName }) => {
     <View style={FeedCardStyles.container}>
       {!hideName && (
         <Pressable
-          onPress={() => navigation.navigate('UserProfile', { user_id })}
+          onPress={() =>
+            navigation.navigate('UserProfile', { user_id: user_id._id })
+          }
         >
           <View style={FeedCardStyles.userContainer}>
             <Image
               style={FeedCardStyles.avatar}
               source={{
-                uri: 'https://www.computerhope.com/jargon/g/guest-user.jpg',
+                uri: user_id.avatar_url,
               }}
               resizeMode="contain"
             />
-            <Text style={FeedCardStyles.username}>{user_id}</Text>
+            <Text style={FeedCardStyles.username}>{user_id.username}</Text>
           </View>
         </Pressable>
       )}
