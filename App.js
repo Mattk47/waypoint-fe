@@ -4,6 +4,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import Record from './src/Screens/Record'
 import FeedNavigator from './src/Navigators/FeedNavigator'
 import ProfileNavigator from './src/Navigators/ProfileNavigator'
+import { AppUserContext } from './contexts'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
 // import LoggedOutNavigator from './src/Navigators/LoggedOutNavigator'
 // import testUser from './dummyUser'
@@ -47,14 +48,21 @@ export const AppNavigator = () => (
 )
 
 const App = () => {
+  const [appUser, setAppUser] = useState({
+    user_id: '61485b4b2e8ed0bd929b436f',
+    username: 'NovellaBayer',
+    avatar_url: 'http://placeimg.com/640/480',
+  })
   // const [userLoggedIn, setUserLoggedIn] = useState(true)
   // const [user, setUser] = useState(testUser)
 
   return (
-    <NavigationContainer>
-      <AppNavigator />
-      {/* {userLoggedIn ? <AppNavigator /> : <LoggedOutNavigator />} */}
-    </NavigationContainer>
+    <AppUserContext.Provider value={{ appUser, setAppUser }}>
+      <NavigationContainer>
+        <AppNavigator />
+        {/* {userLoggedIn ? <AppNavigator /> : <LoggedOutNavigator />} */}
+      </NavigationContainer>
+    </AppUserContext.Provider>
   )
 }
 

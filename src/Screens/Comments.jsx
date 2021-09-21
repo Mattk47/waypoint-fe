@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import {
   View,
   Text,
@@ -9,7 +9,8 @@ import {
   Dimensions,
   FlatList,
 } from 'react-native'
-import { getCommentsByRoute } from '../../api'
+import { getCommentsByRoute, postCommentsByRoute } from '../../api'
+import { AppUserContext } from '../../contexts'
 import CommentCard from '../Components/CommentCard'
 
 const Comments = ({ route }) => {
@@ -17,6 +18,9 @@ const Comments = ({ route }) => {
   const [comments, setComments] = useState([])
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
+  const {
+    appUser: { user_id, username, avatar_url },
+  } = useContext(AppUserContext)
   const { route_id } = route.params
 
   useEffect(() => {
@@ -31,6 +35,23 @@ const Comments = ({ route }) => {
         console.log(err)
       })
   }, [page])
+
+  const postComment = () => {
+    const commentObj = {
+      body: text,
+      user_id,
+    }
+    console.log(route_id, commentObj)
+    postCommentsByRoute(route_id, commentObj).then(({ comment }) => {
+      comment.user_id = { username, avatar_url }
+      setText('')
+      setComments((currentComments) => {
+        return [comment, ...currentComments]
+      }).catch((err) => {
+        console.log(err)
+      })
+    })
+  }
 
   const renderRoute = (comment) => <CommentCard comment={comment} />
 
@@ -54,7 +75,12 @@ const Comments = ({ route }) => {
           value={text}
           maxLength={140}
         />
-        <Button style={CommentsStyles.button} title="Send" />
+        <Button
+          style={CommentsStyles.button}
+          title="Send"
+          onPress={postComment}
+          disabled={text === '' || !user_id}
+        />
       </View>
     </View>
   )

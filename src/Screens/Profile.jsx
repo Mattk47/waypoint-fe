@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import {
   Text,
   View,
@@ -8,11 +8,14 @@ import {
   Pressable,
 } from 'react-native'
 import { getUser } from '../../api'
+import { AppUserContext } from '../../contexts'
 import Feed from './Feed'
 
 export default Profile = ({ route, navigation }) => {
-  const { user_id } = route.params || { user_id: '61485b4b2e8ed0bd929b436f' }
+  const { appUser } = useContext(AppUserContext)
+  const { user_id } = route.params || appUser
   const [user, setUser] = useState({})
+  const [postCount, setPostCount] = useState(0)
 
   useEffect(() => {
     getUser(user_id)
@@ -47,9 +50,7 @@ export default Profile = ({ route, navigation }) => {
               <Pressable>
                 <View style={ProfileStyles.counter}>
                   <Text style={ProfileStyles.label}>Posts</Text>
-                  <Text style={ProfileStyles.numberOf}>
-                    {Math.ceil(Math.random() * 50)}
-                  </Text>
+                  <Text style={ProfileStyles.numberOf}>{postCount}</Text>
                 </View>
               </Pressable>
               <Pressable onPress={() => navigation.navigate('Followers')}>
@@ -71,7 +72,7 @@ export default Profile = ({ route, navigation }) => {
         </View>
         <Text style={ProfileStyles.bio}>{bio}</Text>
       </View>
-      <Feed user_id={user_id} hideName={true} />
+      <Feed user_id={user_id} hideName={true} setPostCount={setPostCount} />
     </>
   )
 }
