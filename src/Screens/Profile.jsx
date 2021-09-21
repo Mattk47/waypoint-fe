@@ -53,7 +53,7 @@ export default Profile = ({ route, navigation }) => {
                   <Text style={ProfileStyles.numberOf}>{postCount}</Text>
                 </View>
               </Pressable>
-              <Pressable onPress={() => navigation.navigate('Followers')}>
+              <Pressable onPress={() => navigation.navigate('Followers', { user_id: user_id })}>
                 <View style={ProfileStyles.counter}>
                   <Text style={ProfileStyles.label}>Followers</Text>
                   <Text style={ProfileStyles.numberOf}>{follow}</Text>
