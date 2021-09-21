@@ -1,10 +1,11 @@
 import React from 'react';
-import { StyleSheet, Text, View, Button, Dimensions } from 'react-native';
+import { StyleSheet, Text, View, Button, Dimensions, Pressable } from 'react-native';
 import { useState, useEffect } from 'react';
 import * as Location from 'expo-location'
 import * as TaskManager from 'expo-task-manager'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import MapView, { Marker, Polyline } from 'react-native-maps'
+import { MaterialCommunityIcons } from '@expo/vector-icons'
 
 const locationStorageName = 'locations'
 
@@ -80,9 +81,20 @@ export default function Record() {
           <Polyline coordinates={getPolyline(locationsState)} lineDashPattern={[1]} />
         }
       </MapView>
-      <Button title='start tracking' onPress={startTracking}/>
-      {/* <Button title='log' onPress={logLocations}/> */}
-      <Button title='stop tracking' onPress={stopTracking}/>
+      <View style = {styles.buttonbox}>
+        <Pressable style={styles.button} onPress={startTracking}>
+          <MaterialCommunityIcons name="map-marker-check" size={22} color="green" />
+          <Text style={styles.text}>{'Start'}</Text>
+        </Pressable>
+        <Pressable style={styles.button} onPress={startTracking }>
+          <MaterialCommunityIcons name="camera-burst" size={22} color="black" />
+          <Text style={styles.text}>{' PoI'}</Text>
+        </Pressable>
+        <Pressable style={styles.button} onPress={stopTracking}>
+          <MaterialCommunityIcons name="map-marker-remove-variant" size={22} color="red" />
+          <Text style={styles.text}>{'Stop'}</Text>
+        </Pressable>
+      </View>
     </View>
   );
 }
@@ -90,13 +102,44 @@ export default function Record() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+    // backgroundColor: '#fff',
+    backgroundColor: 'lightgray',
+    // alignItems: 'center',
+    justifyContent:'space-evenly',
   },
   map: {
     width: Dimensions.get('window').width,
-    height: Dimensions.get('window').height * 0.7,
+    height: Dimensions.get('window').height * 0.72,
+  },
+  buttonbox:{
+    flexDirection: 'row',
+    justifyContent: 'space-evenly'
+  },
+  button: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 6,
+    paddingHorizontal: 6,
+    borderRadius: 10,
+    backgroundColor: 'lightgray',
+    width: Dimensions.get('window').width * 0.3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.8,
+    shadowRadius: 2,  
+    elevation: 5
+  },
+  text: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    letterSpacing: 0.25,
+    color: 'white',    
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.8,
+    shadowRadius: 2,  
+    elevation: 5
   },
 });
 

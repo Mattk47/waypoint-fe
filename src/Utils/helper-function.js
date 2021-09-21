@@ -5,7 +5,7 @@ export const getTimeSince = (dateStr) => {
   const differenceInSeconds = (timeNow - timeCreated) / 1000
 
   if (differenceInSeconds < 60) {
-    return `<1 minute ago`
+    return '<1 minute ago'
   } else if (differenceInSeconds < 3600) {
     const minutes = Math.floor(differenceInSeconds / 60)
     return minutes === 1 ? '1 minute ago' : `${minutes} minutes ago`
