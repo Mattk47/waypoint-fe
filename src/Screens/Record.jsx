@@ -23,10 +23,10 @@ export default function Record() {
   }, [])
 
   useEffect(() => {
-    getLocations().then(locations => {setLocationsState(locations)});
+    getLocations().then(locations => { setLocationsState(locations) });
     const timerId = window.setInterval(() => {
       getLocations().then(locations => {
-        if(locations.length !== locationsState.length) {
+        if (locations.length !== locationsState.length) {
           console.log(locations);
           setLocationsState(locations)
         }
@@ -57,36 +57,37 @@ export default function Record() {
     await AsyncStorage.clear();
   }
   const [region, setRegion] = useState({
-    latitude: 53.558297, 
-    longitude: -1.635262, 
-    latitudeDelta: 9, 
+    latitude: 53.558297,
+    longitude: -1.635262,
+    latitudeDelta: 9,
     longitudeDelta: 9
   });
 
   return (
     <View style={styles.container}>
-      <MapView 
+      <MapView
         style={styles.map}
-        region={locationsState.length > 0 ? ({latitude: locationsState[locationsState.length-1].coords.latitude, longitude: locationsState[locationsState.length-1].coords.longitude, latitudeDelta: 0.05, longitudeDelta: 0.05}) : ({latitude: 53.558297, longitude: -1.635262, latitudeDelta: 9, longitudeDelta: 9})}
-        // onRegionChangeComplete={region => setRegion(region)}
+        region={locationsState.length > 0 ? ({ latitude: locationsState[locationsState.length - 1].coords.latitude, longitude: locationsState[locationsState.length - 1].coords.longitude, latitudeDelta: 0.05, longitudeDelta: 0.05 }) : ({ latitude: 53.558297, longitude: -1.635262, latitudeDelta: 9, longitudeDelta: 9 })}
+      // onRegionChangeComplete={region => setRegion(region)}
       >
-        {locationsState.length > 0 && 
-          <Marker 
+        {locationsState.length > 0 &&
+          <Marker
             coordinate={{
-              latitude: locationsState[locationsState.length-1].coords.latitude, 
-              longitude: locationsState[locationsState.length-1].coords.longitude}}
+              latitude: locationsState[locationsState.length - 1].coords.latitude,
+              longitude: locationsState[locationsState.length - 1].coords.longitude
+            }}
           />
         }
-        {locationsState.length > 0 && 
+        {locationsState.length > 0 &&
           <Polyline coordinates={getPolyline(locationsState)} lineDashPattern={[1]} />
         }
       </MapView>
-      <View style = {styles.buttonbox}>
+      <View style={styles.buttonbox}>
         <Pressable style={styles.button} onPress={startTracking}>
           <MaterialCommunityIcons name="map-marker-check" size={22} color="green" />
           <Text style={styles.text}>{'Start'}</Text>
         </Pressable>
-        <Pressable style={styles.button} onPress={startTracking }>
+        <Pressable style={styles.button} onPress={startTracking}>
           <MaterialCommunityIcons name="camera-burst" size={22} color="black" />
           <Text style={styles.text}>{' PoI'}</Text>
         </Pressable>
@@ -105,40 +106,47 @@ const styles = StyleSheet.create({
     // backgroundColor: '#fff',
     backgroundColor: 'lightgray',
     // alignItems: 'center',
-    justifyContent:'space-evenly',
+    justifyContent: 'space-evenly',
   },
   map: {
     width: Dimensions.get('window').width,
-    height: Dimensions.get('window').height * 0.72,
+    height: Dimensions.get('window').height * 0.82,
   },
-  buttonbox:{
+  buttonbox: {
     flexDirection: 'row',
-    justifyContent: 'space-evenly'
+    justifyContent: 'space-evenly',
+    position: 'absolute',//use absolute position to show button on top of the map
+    bottom: '2%', //for center align
+    alignSelf: 'center',//for align to right
+
   },
   button: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 6,
+    marginLeft: 10,
+    marginRight: 10,
     paddingHorizontal: 6,
     borderRadius: 10,
     backgroundColor: 'lightgray',
-    width: Dimensions.get('window').width * 0.3,
+    width: Dimensions.get('window').width * 0.25,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.8,
-    shadowRadius: 2,  
+    shadowRadius: 2,
     elevation: 5
+
   },
   text: {
     fontSize: 18,
     fontWeight: 'bold',
     letterSpacing: 0.25,
-    color: 'white',    
+    color: 'white',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.8,
-    shadowRadius: 2,  
+    shadowRadius: 2,
     elevation: 5
   },
 });
@@ -182,7 +190,7 @@ const logLocations = async () => {
 }
 
 const getPolyline = (locations) => {
-    return locations.map(({ coords: { latitude, longitude } }) => {
-      return { latitude, longitude }
+  return locations.map(({ coords: { latitude, longitude } }) => {
+    return { latitude, longitude }
   })
 }
