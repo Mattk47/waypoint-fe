@@ -108,3 +108,8 @@ export const patchComment = async (commentId, vote) => {
   const { data } = await api.patch(`/comments/${commentId}`, { vote })
   return data
 }
+
+export const getFollowersById = async (userId) => {
+  const { data } = await api.get(`users/${userId}/followers`)
+  return data
+}
