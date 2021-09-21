@@ -1,3 +1,3 @@
-import react, { createContext } from 'react'
+import { createContext } from 'react'
 
 export const AppUserContext = createContext()
