@@ -3,15 +3,11 @@ import { Text, View, StyleSheet, Dimensions } from 'react-native'
 
 
 const FollowerCard = ({ follower }) => {
-    // let {
-    //     _id,
-    //     'follower_id': { username },
-    //     'following_id': { username }
-    // } = follower.item
+    
 
     let user
 
-    console.log(follower.item.followed_id.username);
+
 
     if (follower.item.follower_id.username) {
         user = follower.item.follower_id.username
