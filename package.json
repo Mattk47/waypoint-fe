@@ -28,7 +28,9 @@
     "react-native-screens": "~3.4.0",
     "react-native-vector-icons": "^8.1.0",
     "react-native-view-more-text": "^2.1.0",
-    "react-native-web": "~0.13.12"
+    "react-native-web": "~0.13.12",
+    "expo-image-picker": "~10.2.2",
+    "expo-image-manipulator": "~9.2.2"
   },
   "devDependencies": {
     "@babel/core": "^7.9.0",

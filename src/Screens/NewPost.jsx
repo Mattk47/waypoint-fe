@@ -9,7 +9,7 @@ import {
 } from 'react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { AppUserContext, RouteFeedContext } from '../../contexts'
-import { postRoute } from '../../api'
+import { postPoiByRouteId, postRoute } from '../../api'
 
 const NewPost = ({ navigation, route }) => {
   const [titleInput, setTitleInput] = useState('')
@@ -18,9 +18,9 @@ const NewPost = ({ navigation, route }) => {
     appUser: { user_id, username, avatar_url },
   } = useContext(AppUserContext)
   const { setRoutes } = useContext(RouteFeedContext)
-  const { locationsState, setLocationsState } = route.params
+  const { pois, locationsState, setLocationsState } = route.params
 
-  const sendPost = () => {
+  const sendPost = async () => {
     const routeObj = {
       title: titleInput,
       description: descriptInput,
@@ -28,19 +28,28 @@ const NewPost = ({ navigation, route }) => {
       coords: locationsState,
       start_time_date: locationsState[0].time,
     }
-    postRoute(routeObj)
-      .then(({ route }) => {
+    try {
+      const { route } = await postRoute(routeObj)
+      Promise.all(
+        pois.map((poi) => {
+          poi.user_id = user_id
+          return postPoiByRouteId(route._id, poi)
+        })
+      ).then(() => {
         AsyncStorage.clear()
         setLocationsState([])
         route.user_id = { username, avatar_url }
         setRoutes((curr) => {
           return [...new Set([route, ...curr])]
         })
+        setTitleInput('')
+        setDescriptInput('')
+        navigation.goBack()
         navigation.navigate('Home', { screen: 'Feed', refresh: true })
       })
-      .catch((err) => {
-        console.log(err)
-      })
+    } catch (err) {
+      console.log(err)
+    }
   }
 
   return (
