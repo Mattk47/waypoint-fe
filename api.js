@@ -70,11 +70,8 @@ export const getPoiByRouteById = async (routeId) => {
   return data
 }
 
-export const postPoiByRouteById = async (routeId, photo, narration) => {
-  const { data } = await api.post(`/routes/${routeId}/poi`, {
-    photo,
-    narration,
-  })
+export const postPoiByRouteId = async (routeId, poiObj) => {
+  const { data } = await api.post(`/routes/${routeId}/poi`, poiObj)
   return data
 }
 
