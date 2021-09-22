@@ -166,7 +166,7 @@ export default function Record() {
           'content-type': imageMime,
         },
       })
-      setImageURL(JSON.stringify(postRes.url.split('?')[0]))
+      setImageURL(JSON.stringify(postRes.url.split('?')[0]).replace('"', ''))
     }
   }
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import {
   StyleSheet,
   View,
@@ -7,10 +7,27 @@ import {
   Button,
   ImageBackground,
 } from 'react-native'
+import { postLogin } from '../../api'
+import { AppUserContext } from '../../contexts'
 
 export default Login = () => {
   const [usernameInput, setUsernameInput] = useState('')
   const [passwordInput, setPasswordInput] = useState('')
+  const [badLogin, setBadLogin] = useState(false)
+  const { setAppUser } = useContext(AppUserContext)
+
+  const handleLogin = async () => {
+    const loggedIn = await postLogin(usernameInput, passwordInput)
+    if (loggedIn.user) {
+      console.log(loggedIn.user);
+      setBadLogin(false)
+      setAppUser(loggedIn.user)
+    } else {
+      setBadLogin(true)
+      setUsernameInput('')
+      setPasswordInput('')
+    }
+  }
 
   return (
     <ImageBackground
@@ -34,7 +51,8 @@ export default Login = () => {
         onChangeText={setPasswordInput}
         value={passwordInput}
       />
-      <Button title="Log In" color="white" />
+      {badLogin && <Text>Incorrect log-in details, please try again</Text>}
+      <Button title="Log In" color="white" onPress={handleLogin}/>
     </ImageBackground>
   )
 }
