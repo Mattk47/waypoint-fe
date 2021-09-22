@@ -142,21 +142,26 @@ const styles = StyleSheet.create({
   },
   map: {
     width: Dimensions.get('window').width,
-    height: Dimensions.get('window').height * 0.72,
+    height: Dimensions.get('window').height * 0.82,
   },
   buttonbox: {
     flexDirection: 'row',
     justifyContent: 'space-evenly',
+    position: 'absolute',//use absolute position to show button on top of the map
+    bottom: '2%', //for center align
+    alignSelf: 'center',//for align to right
   },
   button: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 6,
+    marginLeft: 10,
+    marginRight: 10,
     paddingHorizontal: 6,
     borderRadius: 10,
     backgroundColor: 'lightgray',
-    width: Dimensions.get('window').width * 0.3,
+    width: Dimensions.get('window').width * 0.25,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.8,
