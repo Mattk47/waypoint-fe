@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "et5",
-    "slug": "et5",
+    "name": "Waypoint",
+    "slug": "waypoint",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
