@@ -30,6 +30,7 @@ export default Login = () => {
         style={LoginStyles.input}
         placeholder="Password"
         placeholderTextColor="black"
+        secureTextEntry={true}
         onChangeText={setPasswordInput}
         value={passwordInput}
       />
