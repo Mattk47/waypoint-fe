@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useContext, useState, useEffect } from 'react'
 import {
   Alert,
   Modal,
@@ -11,7 +11,6 @@ import {
   Pressable,
   Image,
 } from 'react-native'
-import { useState, useEffect } from 'react'
 import * as Location from 'expo-location'
 import * as TaskManager from 'expo-task-manager'
 import * as ImagePicker from 'expo-image-picker'
@@ -20,7 +19,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import MapView, { Marker, Polyline } from 'react-native-maps'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
 import { useNavigation } from '@react-navigation/native'
-import { useContext } from 'react/cjs/react.development'
 import { AppUserContext } from '../../contexts'
 import addPhoto from '../../assets/photo.png'
 
@@ -31,6 +29,7 @@ export default function Record() {
     appUser: { user_id },
   } = useContext(AppUserContext)
   const [image, setImage] = useState(null)
+  const [imageURL, setImageURL] = useState(null)
   const [recording, setRecording] = useState(false)
   const [text, setText] = useState('')
   const [errorMsg, setErrorMsg] = useState(null)
@@ -38,12 +37,16 @@ export default function Record() {
   const [pois, setPois] = useState([])
   const [modalVisible, setModalVisible] = useState(false)
   const nav = useNavigation()
-  console.log(modalVisible)
 
   useEffect(() => {
     ;(async () => {
       let { status } = await Location.requestForegroundPermissionsAsync()
       if (status !== 'granted') {
+        setErrorMsg('Permission to access location was denied')
+        return
+      }
+      let { bgStatus } = await Location.requestBackgroundPermissionsAsync()
+      if (bgStatus !== 'granted') {
         setErrorMsg('Permission to access location was denied')
         return
       }
@@ -96,12 +99,12 @@ export default function Record() {
         onPress: takePhoto,
       },
       {
-        text: 'Cancel',
-        style: 'cancel',
-      },
-      {
         text: 'Choose existing photo',
         onPress: pickImage,
+      },
+      {
+        text: 'Cancel',
+        style: 'cancel',
       },
     ])
 
@@ -163,7 +166,7 @@ export default function Record() {
           'content-type': imageMime,
         },
       })
-      console.log(JSON.stringify(postRes.url.split('?')[0]))
+      setImageURL(JSON.stringify(postRes.url.split('?')[0]))
     }
   }
 
@@ -171,15 +174,15 @@ export default function Record() {
     const coords = locationsState[locationsState.length - 1]
     const poiObj = {
       coords,
-      photo: image && image.uri,
+      photo: imageURL,
       narration: text !== '' && text,
     }
     setPois((curr) => {
       return [...curr, poiObj]
     })
-    console.log(pois)
     setText('')
     setImage(null)
+    setImageURL(null)
     setModalVisible(false)
     alert('Waypoint added')
   }
@@ -213,6 +216,20 @@ export default function Record() {
             }}
           />
         )}
+        {pois.length > 0 &&
+          pois.map((poi, i) => {
+            return (
+              <Marker
+                key={i}
+                coordinate={{
+                  latitude: poi.coords.latitude,
+                  longitude: poi.coords.longitude,
+                }}
+                pinColor="blue"
+                // onPress={() => popupWindow(poi)}
+              />
+            )
+          })}
         {locationsState.length > 0 && (
           <Polyline
             coordinates={getPolyline(locationsState)}
