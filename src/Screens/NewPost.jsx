@@ -42,6 +42,9 @@ const NewPost = ({ navigation, route }) => {
         setRoutes((curr) => {
           return [...new Set([route, ...curr])]
         })
+        setTitleInput('')
+        setDescriptInput('')
+        navigation.goBack()
         navigation.navigate('Home', { screen: 'Feed', refresh: true })
       })
     } catch (err) {
