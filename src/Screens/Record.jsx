@@ -1,43 +1,55 @@
-import React from 'react';
-import { StyleSheet, Text, View, Button, Dimensions, Pressable } from 'react-native';
-import { useState, useEffect } from 'react';
+import React from 'react'
+import {
+  StyleSheet,
+  Text,
+  View,
+  Button,
+  Dimensions,
+  Pressable,
+} from 'react-native'
+import { useState, useEffect } from 'react'
 import * as Location from 'expo-location'
 import * as TaskManager from 'expo-task-manager'
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import MapView, { Marker, Polyline } from 'react-native-maps'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
+import { useNavigation } from '@react-navigation/native'
 
 const locationStorageName = 'locations'
 
 export default function Record() {
-  const [errorMsg, setErrorMsg] = useState(null);
+  const [errorMsg, setErrorMsg] = useState(null)
   const [locationsState, setLocationsState] = useState([])
+  const nav = useNavigation()
+
   useEffect(() => {
-    (async () => {
-      let { status } = await Location.requestForegroundPermissionsAsync();
+    ;(async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync()
       if (status !== 'granted') {
-        setErrorMsg('Permission to access location was denied');
-        return;
+        setErrorMsg('Permission to access location was denied')
+        return
       }
     })()
   }, [])
 
   useEffect(() => {
-    getLocations().then(locations => { setLocationsState(locations) });
+    getLocations().then((locations) => {
+      setLocationsState(locations)
+    })
     const timerId = window.setInterval(() => {
-      getLocations().then(locations => {
+      getLocations().then((locations) => {
         if (locations.length !== locationsState.length) {
-          console.log(locations);
           setLocationsState(locations)
         }
       })
-    }, 5000);
-    return () => window.clearInterval(timerId);
-  }, []);
+    }, 5000)
+    return () => window.clearInterval(timerId)
+  }, [])
 
   const startTracking = async () => {
+    await AsyncStorage.clear()
     await Location.startLocationUpdatesAsync('bgLocation', {
-      accuracy: Location.Accuracy.High,
+      accuracy: Location.Accuracy.Highest,
       timeInterval: 6000,
       distanceInterval: 5,
       foregroundService: {
@@ -46,58 +58,78 @@ export default function Record() {
         notificationColor: '#333333',
       },
       activityType: Location.ActivityType.Fitness,
-      showsBackgroundLocationIndicator: true
-    });
-    console.log('[tracking]', 'started background location task');
+      showsBackgroundLocationIndicator: true,
+    })
+    console.log('[tracking]', 'started background location task')
   }
 
   const stopTracking = async () => {
-    await Location.stopLocationUpdatesAsync('bgLocation');
-    console.log('[tracking]', 'stopped background location task');
-    await AsyncStorage.clear();
+    await Location.stopLocationUpdatesAsync('bgLocation')
+    console.log('[tracking]', 'stopped background location task')
+    nav.navigate('NewPost', { locationsState, setLocationsState })
   }
-  const [region, setRegion] = useState({
-    latitude: 53.558297,
-    longitude: -1.635262,
-    latitudeDelta: 9,
-    longitudeDelta: 9
-  });
 
   return (
     <View style={styles.container}>
       <MapView
         style={styles.map}
-        region={locationsState.length > 0 ? ({ latitude: locationsState[locationsState.length - 1].coords.latitude, longitude: locationsState[locationsState.length - 1].coords.longitude, latitudeDelta: 0.05, longitudeDelta: 0.05 }) : ({ latitude: 53.558297, longitude: -1.635262, latitudeDelta: 9, longitudeDelta: 9 })}
-      // onRegionChangeComplete={region => setRegion(region)}
+        region={
+          locationsState.length > 0
+            ? {
+                latitude: locationsState[locationsState.length - 1].latitude,
+                longitude: locationsState[locationsState.length - 1].longitude,
+                latitudeDelta: 0.05,
+                longitudeDelta: 0.05,
+              }
+            : {
+                latitude: 53.558297,
+                longitude: -1.635262,
+                latitudeDelta: 9,
+                longitudeDelta: 9,
+              }
+        }
+        // onRegionChangeComplete={region => setRegion(region)}
       >
-        {locationsState.length > 0 &&
+        {locationsState.length > 0 && (
           <Marker
             coordinate={{
-              latitude: locationsState[locationsState.length - 1].coords.latitude,
-              longitude: locationsState[locationsState.length - 1].coords.longitude
+              latitude: locationsState[locationsState.length - 1].latitude,
+              longitude: locationsState[locationsState.length - 1].longitude,
             }}
           />
-        }
-        {locationsState.length > 0 &&
-          <Polyline coordinates={getPolyline(locationsState)} lineDashPattern={[1]} />
-        }
+        )}
+        {locationsState.length > 0 && (
+          <Polyline
+            coordinates={getPolyline(locationsState)}
+            lineDashPattern={[1]}
+            strokeColor="red"
+          />
+        )}
       </MapView>
       <View style={styles.buttonbox}>
         <Pressable style={styles.button} onPress={startTracking}>
-          <MaterialCommunityIcons name="map-marker-check" size={22} color="green" />
+          <MaterialCommunityIcons
+            name="map-marker-check"
+            size={22}
+            color="green"
+          />
           <Text style={styles.text}>{'Start'}</Text>
         </Pressable>
-        <Pressable style={styles.button} onPress={startTracking}>
+        <Pressable style={styles.button}>
           <MaterialCommunityIcons name="camera-burst" size={22} color="black" />
           <Text style={styles.text}>{' PoI'}</Text>
         </Pressable>
         <Pressable style={styles.button} onPress={stopTracking}>
-          <MaterialCommunityIcons name="map-marker-remove-variant" size={22} color="red" />
+          <MaterialCommunityIcons
+            name="map-marker-remove-variant"
+            size={22}
+            color="red"
+          />
           <Text style={styles.text}>{'Stop'}</Text>
         </Pressable>
       </View>
     </View>
-  );
+  )
 }
 
 const styles = StyleSheet.create({
@@ -118,7 +150,6 @@ const styles = StyleSheet.create({
     position: 'absolute',//use absolute position to show button on top of the map
     bottom: '2%', //for center align
     alignSelf: 'center',//for align to right
-
   },
   button: {
     flexDirection: 'row',
@@ -135,8 +166,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.8,
     shadowRadius: 2,
-    elevation: 5
-
+    elevation: 5,
   },
   text: {
     fontSize: 18,
@@ -147,41 +177,55 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.8,
     shadowRadius: 2,
-    elevation: 5
+    elevation: 5,
   },
-});
+})
 
 TaskManager.defineTask('bgLocation', async (event) => {
   if (event.error) {
-    return console.error('[tracking]', 'Something went wrong within the background location task...', event.error);
+    return console.error(
+      '[tracking]',
+      'Something went wrong within the background location task...',
+      event.error
+    )
   }
 
   // console.log(event.data)
   const locations = event.data.locations
   try {
     for (const location of locations) {
-      await addLocation(location);
+      await addLocation(location)
     }
   } catch (error) {
-    console.log('[tracking]', 'Something went wrong when saving a new location...', error);
+    console.log(
+      '[tracking]',
+      'Something went wrong when saving a new location...',
+      error
+    )
   }
-});
+})
 
-const addLocation = async (location) => {
-  const existing = await getLocations();
-  const locations = [...existing, location];
-  await setLocations(locations);
-  console.log('[storage]', 'added location -', locations.length, 'stored locations');
+const addLocation = async ({ coords: { latitude, longitude }, timestamp }) => {
+  const newLocation = { latitude, longitude, time: timestamp }
+  const existing = await getLocations()
+  const locations = [...existing, newLocation]
+  await setLocations(locations)
+  console.log(
+    '[storage]',
+    'added location -',
+    locations.length,
+    'stored locations'
+  )
   return locations
 }
 
 const getLocations = async () => {
-  const data = await AsyncStorage.getItem(locationStorageName);
-  return data ? JSON.parse(data) : [];
+  const data = await AsyncStorage.getItem(locationStorageName)
+  return data ? JSON.parse(data) : []
 }
 
 const setLocations = async (locations) => {
-  await AsyncStorage.setItem(locationStorageName, JSON.stringify(locations));
+  await AsyncStorage.setItem(locationStorageName, JSON.stringify(locations))
 }
 
 const logLocations = async () => {
@@ -190,7 +234,7 @@ const logLocations = async () => {
 }
 
 const getPolyline = (locations) => {
-  return locations.map(({ coords: { latitude, longitude } }) => {
+  return locations.map(({ latitude, longitude }) => {
     return { latitude, longitude }
   })
 }
