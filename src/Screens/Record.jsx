@@ -1,26 +1,44 @@
 import React from 'react'
 import {
+  Alert,
+  Modal,
   StyleSheet,
   Text,
+  TextInput,
   View,
   Button,
   Dimensions,
   Pressable,
+  Image,
 } from 'react-native'
 import { useState, useEffect } from 'react'
 import * as Location from 'expo-location'
 import * as TaskManager from 'expo-task-manager'
+import * as ImagePicker from 'expo-image-picker'
+import * as ImageManipulator from 'expo-image-manipulator'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import MapView, { Marker, Polyline } from 'react-native-maps'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
 import { useNavigation } from '@react-navigation/native'
+import { useContext } from 'react/cjs/react.development'
+import { AppUserContext } from '../../contexts'
+import addPhoto from '../../assets/photo.png'
 
 const locationStorageName = 'locations'
 
 export default function Record() {
+  const {
+    appUser: { user_id },
+  } = useContext(AppUserContext)
+  const [image, setImage] = useState(null)
+  const [recording, setRecording] = useState(false)
+  const [text, setText] = useState('')
   const [errorMsg, setErrorMsg] = useState(null)
   const [locationsState, setLocationsState] = useState([])
+  const [pois, setPois] = useState([])
+  const [modalVisible, setModalVisible] = useState(false)
   const nav = useNavigation()
+  console.log(modalVisible)
 
   useEffect(() => {
     ;(async () => {
@@ -47,6 +65,7 @@ export default function Record() {
   }, [])
 
   const startTracking = async () => {
+    setRecording(true)
     await AsyncStorage.clear()
     await Location.startLocationUpdatesAsync('bgLocation', {
       accuracy: Location.Accuracy.Highest,
@@ -64,13 +83,109 @@ export default function Record() {
   }
 
   const stopTracking = async () => {
+    setRecording(false)
     await Location.stopLocationUpdatesAsync('bgLocation')
     console.log('[tracking]', 'stopped background location task')
-    nav.navigate('NewPost', { locationsState, setLocationsState })
+    nav.navigate('NewPost', { pois, locationsState, setLocationsState })
+  }
+
+  const createThreeButtonAlert = () =>
+    Alert.alert('Add photo', '', [
+      {
+        text: 'Take photo',
+        onPress: takePhoto,
+      },
+      {
+        text: 'Cancel',
+        style: 'cancel',
+      },
+      {
+        text: 'Choose existing photo',
+        onPress: pickImage,
+      },
+    ])
+
+  const pickImage = async () => {
+    const cameraRollStatus =
+      await ImagePicker.requestMediaLibraryPermissionsAsync()
+
+    if (cameraRollStatus.status !== 'granted') {
+      alert('Sorry, we need these permissions to make this work!')
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 0.5,
+    })
+    handlePickedImage(result)
+  }
+
+  const takePhoto = async () => {
+    const cameraStatus = await ImagePicker.requestCameraPermissionsAsync()
+
+    if (cameraStatus.status !== 'granted') {
+      alert('Sorry, we need these permissions to make this work!')
+    }
+
+    let result = await ImagePicker.launchCameraAsync({
+      mediaTypes: 'Images',
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 0.5,
+    })
+    handlePickedImage(result)
+  }
+
+  const handlePickedImage = async (result) => {
+    if (!result.cancelled) {
+      const imagePath = result.uri
+
+      const manipResult = await ImageManipulator.manipulateAsync(imagePath, [
+        { resize: { height: 1080, width: 1080 } },
+      ])
+      setImage(manipResult)
+
+      const imageExt = result.uri.split('.').pop()
+      const imageMime = `image/${imageExt}`
+
+      let picture = await fetch(manipResult.uri)
+      picture = await picture.blob()
+      const file = new File([picture], `photo.${imageExt}`)
+      const res = await fetch('https://waypoint-server.herokuapp.com/api/poi')
+      const preSigned = await res.json()
+
+      const postRes = await fetch(preSigned.uri, {
+        method: 'PUT',
+        body: file,
+        headers: {
+          'content-type': imageMime,
+        },
+      })
+      console.log(JSON.stringify(postRes.url.split('?')[0]))
+    }
+  }
+
+  const addPoi = () => {
+    const coords = locationsState[locationsState.length - 1]
+    const poiObj = {
+      coords,
+      photo: image && image.uri,
+      narration: text !== '' && text,
+    }
+    setPois((curr) => {
+      return [...curr, poiObj]
+    })
+    console.log(pois)
+    setText('')
+    setImage(null)
+    setModalVisible(false)
+    alert('Waypoint added')
   }
 
   return (
-    <View style={styles.container}>
+    <View style={styles.centeredView}>
       <MapView
         style={styles.map}
         region={
@@ -107,38 +222,93 @@ export default function Record() {
         )}
       </MapView>
       <View style={styles.buttonbox}>
-        <Pressable style={styles.button} onPress={startTracking}>
-          <MaterialCommunityIcons
-            name="map-marker-check"
-            size={22}
-            color="green"
-          />
-          <Text style={styles.text}>{'Start'}</Text>
-        </Pressable>
-        <Pressable style={styles.button}>
-          <MaterialCommunityIcons name="camera-burst" size={22} color="black" />
-          <Text style={styles.text}>{' PoI'}</Text>
-        </Pressable>
-        <Pressable style={styles.button} onPress={stopTracking}>
-          <MaterialCommunityIcons
-            name="map-marker-remove-variant"
-            size={22}
-            color="red"
-          />
-          <Text style={styles.text}>{'Stop'}</Text>
-        </Pressable>
+        {!recording && (
+          <Pressable style={styles.button} onPress={startTracking}>
+            <MaterialCommunityIcons
+              name="map-marker-check"
+              size={22}
+              color="green"
+            />
+            <Text style={styles.text}>{'Start'}</Text>
+          </Pressable>
+        )}
+        {recording && (
+          <Pressable
+            style={styles.button}
+            onPress={() => setModalVisible(true)}
+          >
+            <MaterialCommunityIcons
+              name="camera-burst"
+              size={22}
+              color="black"
+            />
+            <Text style={styles.text}>{' PoI'}</Text>
+          </Pressable>
+        )}
+        {recording && (
+          <Pressable style={styles.button} onPress={stopTracking}>
+            <MaterialCommunityIcons
+              name="map-marker-remove-variant"
+              size={22}
+              color="red"
+            />
+            <Text style={styles.text}>{'Stop'}</Text>
+          </Pressable>
+        )}
       </View>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          Alert.alert('Modal has been closed.')
+          setModalVisible(!modalVisible)
+        }}
+      >
+        {/* <View style={styles.centeredView}> */}
+        <View style={styles.modalView}>
+          <Pressable onPress={createThreeButtonAlert}>
+            <Image
+              source={image ? { uri: image.uri } : addPhoto}
+              style={{ width: 100, height: 100 }}
+            />
+          </Pressable>
+          <View style={styles.footer}>
+            <TextInput
+              style={styles.input}
+              placeholder="Add comment"
+              onChangeText={setText}
+              multiline={true}
+              value={text}
+              maxLength={500}
+            />
+            <Button
+              title="Send"
+              disabled={text === '' && !image}
+              onPress={addPoi}
+            />
+            <Pressable
+              style={[styles.button2, styles.buttonClose]}
+              onPress={() => setModalVisible(!modalVisible)}
+            >
+              <Text style={styles.textStyle}>Hide Modal</Text>
+            </Pressable>
+          </View>
+        </View>
+        {/* </View> */}
+      </Modal>
     </View>
   )
 }
 
 const styles = StyleSheet.create({
-  container: {
+  centeredView: {
     flex: 1,
     // backgroundColor: '#fff',
     backgroundColor: 'lightgray',
-    // alignItems: 'center',
-    justifyContent: 'space-evenly',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 22,
   },
   map: {
     width: Dimensions.get('window').width,
@@ -147,9 +317,9 @@ const styles = StyleSheet.create({
   buttonbox: {
     flexDirection: 'row',
     justifyContent: 'space-evenly',
-    position: 'absolute',//use absolute position to show button on top of the map
+    position: 'absolute', //use absolute position to show button on top of the map
     bottom: '2%', //for center align
-    alignSelf: 'center',//for align to right
+    alignSelf: 'center', //for align to right
   },
   button: {
     flexDirection: 'row',
@@ -178,6 +348,69 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.8,
     shadowRadius: 2,
     elevation: 5,
+  },
+  modalView: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    margin: 20,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: 15,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  button2: {
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2,
+  },
+  buttonOpen: {
+    backgroundColor: '#F194FF',
+  },
+  buttonClose: {
+    backgroundColor: '#2196F3',
+  },
+  textStyle: {
+    color: 'white',
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: 'center',
+  },
+  input: {
+    width: '100%',
+    height: 120,
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: 'darkgrey',
+    // marginRight: 5,
+    // marginLeft: 10,
+    padding: 15,
+    paddingTop: 10,
+    paddingBottom: 10,
+    borderRadius: 20,
+  },
+  footer: {
+    borderBottomLeftRadius: 20,
+    borderBottomRightRadius: 20,
+    overflow: 'hidden',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'absolute',
+    // height: 140,
+    bottom: 0,
+    width: '100%',
   },
 })
 
