@@ -63,7 +63,16 @@ export default function Post({ route }) {
         }}
         scrollEnabled={!windowOpen}
         zoomEnabled={!windowOpen}
-        // onRegionChangeComplete={(region) => setRegion(region)}
+        rotateEnabled={!windowOpen}
+        mapPadding={{
+          top: 30,
+          right: 30,
+          bottom: 30,
+          left: 30,
+        }}
+        legalLabelInsets={{
+          bottom: -30,
+        }}
       >
         <Marker key="start" coordinate={path[0]} pinColor="green" />
         {points.length > 0 &&
@@ -108,19 +117,19 @@ const styles = StyleSheet.create({
 })
 
 const calcDelta = (coords) => {
-  const zoomPadding = 1.2
   let maxLong = coords[0].longitude,
     minLong = coords[0].longitude
   let maxLat = coords[0].latitude,
     minLat = coords[0].latitude
+
   for (let point of coords) {
     if (point.longitude > maxLong) maxLong = point.longitude
     if (point.longitude < minLong) minLong = point.longitude
     if (point.latitude > maxLat) maxLat = point.latitude
     if (point.latitude < minLat) minLat = point.latitude
   }
-  const latitudeDelta = (maxLat - minLat) * zoomPadding
-  const longitudeDelta = (maxLong - minLong) * zoomPadding
+  const latitudeDelta = maxLat - minLat
+  const longitudeDelta = maxLong - minLong
   return {
     latitudeDelta,
     longitudeDelta,
