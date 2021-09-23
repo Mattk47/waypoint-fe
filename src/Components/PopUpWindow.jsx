@@ -1,5 +1,6 @@
 import React from 'react'
 import { Button, View, Image, Text, StyleSheet, Dimensions } from 'react-native'
+import DefaultButton from './Button'
 
 const PopUpWindow = ({ details: { photo, narration }, setWindowOpen }) => {
   return (
@@ -14,10 +15,14 @@ const PopUpWindow = ({ details: { photo, narration }, setWindowOpen }) => {
         />
       )}
       {narration && <Text style={PopUpWindowStyles.text}>{narration}</Text>}
-      <Button
+      {/* <Button
         title="Close"
         onPress={() => setWindowOpen(false)}
         color="white"
+      /> */}
+      <DefaultButton
+        buttonText="Close"
+        onPressFunc={() => setWindowOpen(false)}
       />
     </View>
   )
@@ -34,7 +39,6 @@ const PopUpWindowStyles = StyleSheet.create({
     // alignItems: 'center',
     // justifyContent: 'center',
     zIndex: 2,
-    paddingBottom: 10,
   },
   photo: {
     backgroundColor: 'white',
@@ -42,7 +46,9 @@ const PopUpWindowStyles = StyleSheet.create({
     height: Dimensions.get('window').width,
   },
   text: {
-    padding: 15,
+    paddingTop: 15,
+    paddingRight: 15,
+    paddingLeft: 15,
     color: 'white',
   },
 })
