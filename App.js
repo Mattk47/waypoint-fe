@@ -6,15 +6,23 @@ import ProfileNavigator from './src/Navigators/ProfileNavigator'
 import { AppUserContext, RouteFeedContext } from './contexts'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
 import RecordNavigator from './src/Navigators/RecordNavigator'
-// import LoggedOutNavigator from './src/Navigators/LoggedOutNavigator'
+import { createStackNavigator } from '@react-navigation/stack'
+import Welcome from './src/Screens/Welcome'
+import Login from './src/Screens/Login'
+import SignUp from './src/Screens/SignUp'
+
 
 const Tab = createBottomTabNavigator()
+const Stack = createStackNavigator()
 
 export const AppNavigator = () => {
   const [routes, setRoutes] = useState([])
+  const [appUser, setAppUser] = useState(null)
 
   return (
-    <RouteFeedContext.Provider value={{ routes, setRoutes }}>
+           <AppUserContext.Provider value={{ appUser, setAppUser }}>
+    {appUser ? (
+          <RouteFeedContext.Provider value={{ routes, setRoutes }}>
       <Tab.Navigator
         screenOptions={({ route }) => ({
           tabBarIcon: ({ focused, color, size }) => {
@@ -66,27 +74,32 @@ export const AppNavigator = () => {
         />
       </Tab.Navigator>
     </RouteFeedContext.Provider>
-  )
-}
 
+      ) : (
+        <Stack.Navigator>
+        <Stack.Screen
+          name="Welcome"
+          component={Welcome}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen name="Log In" component={Login} />
+        <Stack.Screen name="Sign Up" component={SignUp} />
+      </Stack.Navigator>
+      )
+      }
+  </AppUserContext.Provider>
+)
+}
 const App = () => {
   console.disableYellowBox = true
-  const [appUser, setAppUser] = useState({
-    user_id: '61485b4b2e8ed0bd929b436f',
-    username: 'NovellaBayer',
-    avatar_url: 'http://placeimg.com/640/480',
-  })
-  // const [userLoggedIn, setUserLoggedIn] = useState(true)
-  // const [user, setUser] = useState(testUser)
 
   return (
-    <AppUserContext.Provider value={{ appUser, setAppUser }}>
+
       <NavigationContainer>
         <AppNavigator />
-        {/* {userLoggedIn ? <AppNavigator /> : <LoggedOutNavigator />} */}
       </NavigationContainer>
-    </AppUserContext.Provider>
   )
+  
 }
 
 export default App

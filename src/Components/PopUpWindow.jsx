@@ -9,7 +9,7 @@ const PopUpWindow = ({ details: { photo, narration }, setWindowOpen }) => {
         <Image
           style={PopUpWindowStyles.photo}
           source={{
-            uri: JSON.parse(photo),
+            uri: photo,
           }}
           resizeMode="cover"
         />
