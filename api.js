@@ -117,6 +117,6 @@ export const getFollowingById = async (userId) => {
 }
 
 export const postLogin = async (username, password) => {
-  const { data } = await api.post(`/login`, { username, password })
+  const { data } = await api.post('/login', { username, password })
   return data
 }
