@@ -8,6 +8,7 @@ import {
   Button,
   Dimensions,
   FlatList,
+  Pressable,
 } from 'react-native'
 import { getCommentsByRoute, postCommentsByRoute } from '../../api'
 import { AppUserContext } from '../../contexts'
@@ -75,12 +76,33 @@ const Comments = ({ route }) => {
           value={text}
           maxLength={140}
         />
-        <Button
+        {/* <Button
           style={CommentsStyles.button}
           title="Send"
           onPress={postComment}
           disabled={text === '' || !user_id}
-        />
+        /> */}
+        <Pressable
+          style={{
+            borderRadius: 20,
+            padding: 10,
+            elevation: 2,
+            backgroundColor: 'rgb(70, 184, 159)',
+            width: 75,
+          }}
+          onPress={postComment}
+          disabled={text === ''}
+        >
+          <Text
+            style={{
+              color: 'white',
+              fontWeight: 'bold',
+              textAlign: 'center',
+            }}
+          >
+            Send
+          </Text>
+        </Pressable>
       </View>
     </View>
   )
@@ -90,7 +112,7 @@ export default Comments
 
 const CommentsStyles = StyleSheet.create({
   input: {
-    width: '80%',
+    width: '75%',
     height: 40,
     backgroundColor: '#fff',
     borderWidth: 1,

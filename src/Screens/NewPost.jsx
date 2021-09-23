@@ -10,6 +10,7 @@ import {
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { AppUserContext, RouteFeedContext } from '../../contexts'
 import { postPoiByRouteId, postRoute } from '../../api'
+import DefaultButton from '../Components/Button'
 
 const NewPost = ({ navigation, route }) => {
   const [titleInput, setTitleInput] = useState('')
@@ -70,10 +71,15 @@ const NewPost = ({ navigation, route }) => {
         value={descriptInput}
         maxLength={500}
       />
-      <Button onPress={sendPost} title="Upload" />
-      {/* <Pressable style={NewPostStyles.button} onPress={sendPost}>
-        <Text style={{ color: 'white' }}>Upload</Text>
-      </Pressable> */}
+      {/* <Button onPress={sendPost} title="Upload" /> */}
+      <View style={NewPostStyles.buttonContainer}>
+        <DefaultButton
+          buttonText="Upload"
+          onPressFunc={sendPost}
+          disabled={titleInput === ''}
+        />
+        <DefaultButton buttonText="Discard" />
+      </View>
     </View>
   )
 }
@@ -104,5 +110,11 @@ const NewPostStyles = StyleSheet.create({
     height: 40,
     backgroundColor: 'rgb(78, 181, 143)',
     borderRadius: 20,
+  },
+  buttonContainer: {
+    marginRight: '10%',
+    marginLeft: '10%',
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
   },
 })

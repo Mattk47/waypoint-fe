@@ -44,8 +44,17 @@ export const AppNavigator = () => {
               />
             )
           },
-          tabBarActiveTintColor: 'blue',
-          tabBarInactiveTintColor: 'gray',
+          tabBarActiveTintColor: 'white',
+          tabBarInactiveTintColor: 'rgb(225, 225, 225)',
+          tabBarStyle: {
+            paddingTop: 10,
+            paddingBottom: 20,
+            backgroundColor: 'rgb(70, 184, 159)',
+          },
+          tabBarLabelStyle: {
+            fontWeight: 'bold',
+            fontSize: 15,
+          },
         })}
       >
         <Tab.Screen
@@ -82,6 +91,8 @@ export const AppNavigator = () => {
 )
 }
 const App = () => {
+  console.disableYellowBox = true
+
   return (
 
       <NavigationContainer>
