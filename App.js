@@ -36,8 +36,17 @@ export const AppNavigator = () => {
               />
             )
           },
-          tabBarActiveTintColor: 'blue',
-          tabBarInactiveTintColor: 'gray',
+          tabBarActiveTintColor: 'white',
+          tabBarInactiveTintColor: 'rgb(225, 225, 225)',
+          tabBarStyle: {
+            paddingTop: 10,
+            paddingBottom: 20,
+            backgroundColor: 'rgb(70, 184, 159)',
+          },
+          tabBarLabelStyle: {
+            fontWeight: 'bold',
+            fontSize: 15,
+          },
         })}
       >
         <Tab.Screen
@@ -61,6 +70,7 @@ export const AppNavigator = () => {
 }
 
 const App = () => {
+  console.disableYellowBox = true
   const [appUser, setAppUser] = useState({
     user_id: '61485b4b2e8ed0bd929b436f',
     username: 'NovellaBayer',
