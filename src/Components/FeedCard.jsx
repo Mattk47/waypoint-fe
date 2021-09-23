@@ -85,6 +85,16 @@ const FeedCard = ({ route, hideName }) => {
         region={region}
         scrollEnabled={false}
         zoomEnabled={false}
+        rotateEnabled={false}
+        mapPadding={{
+          top: 30,
+          right: 30,
+          bottom: 30,
+          left: 30,
+        }}
+        legalLabelInsets={{
+          bottom: -30,
+        }}
       >
         <Polyline
           coordinates={path}
@@ -102,18 +112,27 @@ const FeedCard = ({ route, hideName }) => {
         >
           <Text>{description}</Text>
         </ViewMoreText>
-        <Text>{`${routeLikes} likes`}</Text>
         <Pressable
           onPress={() =>
             navigation.navigate('Comments', {
               route_id: _id,
             })
           }
+          style={{ paddingBottom: 5, paddingTop: 5 }}
         >
-          <Text>View all comments</Text>
+          <Text style={{ fontWeight: 'bold' }}>View all comments</Text>
         </Pressable>
-        <Text>{getTimeSince(createdAt)}</Text>
-        <LikeButton setLikes={setRouteLikes} route_id={_id} />
+        <Text style={{ paddingBottom: 5 }}>{getTimeSince(createdAt)}</Text>
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'flex-start',
+          }}
+        >
+          <LikeButton setLikes={setRouteLikes} route_id={_id} />
+          <Text style={{ marginLeft: 10 }}>{`${routeLikes} likes`}</Text>
+        </View>
       </View>
     </View>
   )
@@ -168,7 +187,6 @@ const FeedCardStyles = StyleSheet.create({
 })
 
 const calcDelta = (coords) => {
-  const zoomPadding = 1.2
   let maxLong = coords[0].longitude,
     minLong = coords[0].longitude
   let maxLat = coords[0].latitude,
@@ -181,8 +199,8 @@ const calcDelta = (coords) => {
     if (point.latitude < minLat) minLat = point.latitude
   }
 
-  const latitudeDelta = (maxLat - minLat) * zoomPadding
-  const longitudeDelta = (maxLong - minLong) * zoomPadding
+  const latitudeDelta = maxLat - minLat
+  const longitudeDelta = maxLong - minLong
 
   return {
     latitudeDelta,
