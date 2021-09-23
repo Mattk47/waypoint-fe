@@ -21,6 +21,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons'
 import { useNavigation } from '@react-navigation/native'
 import { AppUserContext } from '../../contexts'
 import addPhoto from '../../assets/photo.png'
+import DefaultButton from '../Components/Button'
 
 const locationStorageName = 'locations'
 
@@ -196,14 +197,14 @@ export default function Record() {
             ? {
                 latitude: locationsState[locationsState.length - 1].latitude,
                 longitude: locationsState[locationsState.length - 1].longitude,
-                latitudeDelta: 0.05,
-                longitudeDelta: 0.05,
+                latitudeDelta: 0.03,
+                longitudeDelta: 0.03,
               }
             : {
-                latitude: 53.558297,
-                longitude: -1.635262,
-                latitudeDelta: 9,
-                longitudeDelta: 9,
+                latitude: 54.058297,
+                longitude: -3.235262,
+                latitudeDelta: 12,
+                longitudeDelta: 12,
               }
         }
         // onRegionChangeComplete={region => setRegion(region)}
@@ -299,17 +300,28 @@ export default function Record() {
               value={text}
               maxLength={500}
             />
-            <Button
-              title="Send"
+            {/* <Button
+              title="Save"
               disabled={text === '' && !image}
               onPress={addPoi}
-            />
-            <Pressable
-              style={[styles.button2, styles.buttonClose]}
-              onPress={() => setModalVisible(!modalVisible)}
-            >
-              <Text style={styles.textStyle}>Hide Modal</Text>
-            </Pressable>
+            /> */}
+            <View style={styles.buttonContainer}>
+              <DefaultButton
+                buttonText="Save"
+                onPressFunc={addPoi}
+                disabled={text === '' && !image}
+              />
+              {/* <Pressable
+                style={[styles.button2, styles.buttonClose]}
+                onPress={() => setModalVisible(!modalVisible)}
+              >
+                <Text style={styles.textStyle}>Hide Modal</Text>
+              </Pressable> */}
+              <DefaultButton
+                buttonText="Cancel"
+                onPressFunc={() => setModalVisible(!modalVisible)}
+              />
+            </View>
           </View>
         </View>
         {/* </View> */}
@@ -329,7 +341,7 @@ const styles = StyleSheet.create({
   },
   map: {
     width: Dimensions.get('window').width,
-    height: Dimensions.get('window').height * 0.82,
+    height: Dimensions.get('window').height,
   },
   buttonbox: {
     flexDirection: 'row',
@@ -337,6 +349,10 @@ const styles = StyleSheet.create({
     position: 'absolute', //use absolute position to show button on top of the map
     bottom: '2%', //for center align
     alignSelf: 'center', //for align to right
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
   },
   button: {
     flexDirection: 'row',
@@ -347,7 +363,9 @@ const styles = StyleSheet.create({
     marginRight: 10,
     paddingHorizontal: 6,
     borderRadius: 10,
-    backgroundColor: 'lightgray',
+    borderWidth: 2,
+    borderColor: 'white',
+    backgroundColor: 'rgb(70, 184, 159)',
     width: Dimensions.get('window').width * 0.25,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
