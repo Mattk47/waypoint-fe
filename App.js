@@ -17,7 +17,12 @@ const Stack = createStackNavigator()
 
 export const AppNavigator = () => {
   const [routes, setRoutes] = useState([])
-  const [appUser, setAppUser] = useState(null)
+  const [appUser, setAppUser] = useState({
+    "avatar_url": "https://upload.wikimedia.org/wikipedia/en/3/3b/Dark_Side_of_the_Moon.png",
+    "bio": "Lets walk",
+    "user_id": "61bc71c0715518475a4d5762",
+    "username": "Matt12",
+  })
 
   return (
     <AppUserContext.Provider value={{ appUser, setAppUser }}>
@@ -99,7 +104,7 @@ const App = () => {
       <AppNavigator />
     </NavigationContainer>
   )
-  
+
 }
 
 export default App

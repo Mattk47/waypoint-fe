@@ -27,6 +27,7 @@ export default Welcome = () => {
           nav.navigate('Sign Up')
         }}
       />
+
       <Text style={WelcomeStyles.text}>Already a member?</Text>
       <Button
         title="Log In"
@@ -56,5 +57,6 @@ const WelcomeStyles = StyleSheet.create({
   text: {
     color: 'white',
     fontSize: 20,
+    margin: 10
   },
 })
